@@ -16,14 +16,14 @@
     "text-adventure",
     "engine",
     "adventure-game-engine",
-    "javascript", 
+    "javascript",
     "typescript",
     "text-adventure-game",
     "repl"
   ],
   "author": "Benji Kay",
   "contributors": [
-      "TheWilley"
+    "TheWilley"
   ],
   "license": "GPL",
   "bugs": {
@@ -32,6 +32,9 @@
   "homepage": "https://github.com/TheWilley/text-engine-ts/issues",
   "devDependencies": {
     "@types/node": "^20.4.7",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
+    "eslint": "^8.46.0",
     "typescript": "^5.1.6"
   }
 }
