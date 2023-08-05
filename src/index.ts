@@ -13,7 +13,10 @@ let bullet = '•';
 let printQueue = [];
 
 // reference to the input element
-let input = document.querySelector('#input');
+let input = document.querySelector('#input') as HTMLInputElement;
+
+// reference to the output element
+let output = document.querySelector('#output') as HTMLDivElement;
 
 // add any default values to the disk
 // disk -> disk
@@ -44,7 +47,7 @@ let init = (disk) => {
 
 // register listeners for input events
 let setup = () => {
-  input.addEventListener('keypress', (e) => {
+  input.addEventListener('keypress', (e: KeyboardEvent) => {
     const ENTER = 13;
 
     if (e.keyCode === ENTER) {
@@ -52,7 +55,7 @@ let setup = () => {
     }
   });
 
-  input.addEventListener('keydown', (e) => {
+  input.addEventListener('keydown', (e: KeyboardEvent) => {
     input.focus();
 
     const UP = 38;
@@ -71,7 +74,7 @@ let setup = () => {
   });
 
   input.addEventListener('focusout', () => {
-    input.focus({preventScroll: true});
+    input.focus({ preventScroll: true });
   });
 };
 
@@ -86,7 +89,7 @@ let save = (name = 'save') => {
 // reapply inputs from saved game
 // (optionally accepts a name for the save)
 let load = (name = 'save') => {
-  let save = localStorage.getItem(name);
+  let save = localStorage.m(name);
 
   if (!save) {
     println(`Save file not found.`);
@@ -156,7 +159,7 @@ let importSave = () => {
 // saves text from memory to disk
 let saveFile = (content, filename) => {
   const a = document.createElement('a');
-  const file = new Blob([content], {type: 'text/plain'});
+  const file = new Blob([content], { type: 'text/plain' });
 
   a.href = URL.createObjectURL(file);
   a.download = filename;
@@ -180,7 +183,7 @@ let applyInputs = (string) => {
 
   try {
     ins = JSON.parse(string);
-  } catch(err) {
+  } catch (err) {
     println(`An error occurred. See error console for more details.`);
     console.error(`An error occurred while attempting to parse text-engine inputs.
       Inputs: ${string}
@@ -213,7 +216,7 @@ let look = () => {
   const room = getRoom(disk.roomId);
 
   if (typeof room.onLook === 'function') {
-    room.onLook({disk, println});
+    room.onLook({ disk, println });
   }
 
   println(room.desc)
@@ -237,8 +240,8 @@ let lookAt = (args) => {
       println(`You don\'t notice anything remarkable about it.`);
     }
 
-    if (typeof(item.onLook) === 'function') {
-      item.onLook({disk, println, getRoom, enterRoom, item});
+    if (typeof (item.onLook) === 'function') {
+      item.onLook({ disk, println, getRoom, enterRoom, item });
     }
   } else {
     const character = getCharacter(name, getCharactersInRoom(disk.roomId));
@@ -250,8 +253,8 @@ let lookAt = (args) => {
         println(`You don't notice anything remarkable about them.`);
       }
 
-      if (typeof(character.onLook) === 'function') {
-        character.onLook({disk, println, getRoom, enterRoom, item});
+      if (typeof (character.onLook) === 'function') {
+        character.onLook({ disk, println, getRoom, enterRoom, item });
       }
     } else {
       println(`You don't see any such thing.`);
@@ -425,17 +428,17 @@ let talkToOrAboutX = (preposition, x) => {
       return;
     }
 
-    if (typeof(character.topics) === 'string') {
+    if (typeof (character.topics) === 'string') {
       println(character.topics);
       return;
     }
 
-    if (typeof(character.onTalk) === 'function') {
-      character.onTalk({disk, println, getRoom, enterRoom, room, character});
+    if (typeof (character.onTalk) === 'function') {
+      character.onTalk({ disk, println, getRoom, enterRoom, room, character });
     }
 
     topics = typeof character.topics === 'function'
-      ? character.topics({println, room})
+      ? character.topics({ println, room })
       : character.topics;
 
     if (!topics.length && !Object.keys(topics).length) {
@@ -446,7 +449,7 @@ let talkToOrAboutX = (preposition, x) => {
     // initialize the chat log if there isn't one yet
     character.chatLog = character.chatLog || [];
     disk.conversant = character;
-    listTopics(topics);
+    listTopics();
   } else if (preposition === 'about') {
     if (!disk.conversant) {
       println(`You need to be in a conversation to talk about something.`);
@@ -468,7 +471,7 @@ let talkToOrAboutX = (preposition, x) => {
             println(topic.line);
           }
           if (topic.onSelected) {
-            topic.onSelected({disk, println, getRoom, enterRoom, room, character});
+            topic.onSelected({ disk, println, getRoom, enterRoom, room, character });
           }
           // add the topic to the log
           character.chatLog.push(getKeywordFromTopic(topic));
@@ -481,9 +484,9 @@ let talkToOrAboutX = (preposition, x) => {
       // continue the conversation.
       if (disk.conversation) {
         topics = typeof character.topics === 'function'
-          ? character.topics({println, room})
+          ? character.topics({ println, room })
           : character.topics;
-        listTopics(character);
+        listTopics();
       }
     } else {
       println(`That person is no longer available for conversation.`);
@@ -521,13 +524,13 @@ let takeItem = (itemName) => {
       room.items.splice(itemIndex, 1);
 
       if (typeof item.onTake === 'function') {
-        item.onTake({disk, println, room, getRoom, enterRoom, item});
+        item.onTake({ disk, println, room, getRoom, enterRoom, item });
       } else {
         println(`You took the ${getName(item.name)}.`);
       }
     } else {
       if (typeof item.onTake === 'function') {
-        item.onTake({disk, println, room, getRoom, enterRoom, item});
+        item.onTake({ disk, println, room, getRoom, enterRoom, item });
       } else {
         println(item.block || `You can't take that.`);
       }
@@ -585,9 +588,9 @@ let useItem = (itemName) => {
   // use item and give it a reference to the game
   if (typeof item.onUse === 'string') {
     const use = eval(item.onUse);
-    use({disk, println, getRoom, enterRoom, item});
+    use({ disk, println, getRoom, enterRoom, item });
   } else if (typeof item.onUse === 'function') {
-    item.onUse({disk, println, getRoom, enterRoom, item});
+    item.onUse({ disk, println, getRoom, enterRoom, item });
   }
 };
 
@@ -719,7 +722,7 @@ let commands = [
 
 // process user input & update game state (bulk of the engine)
 // accepts optional string input; otherwise grabs it from the input element
-let applyInput = (input) => {
+let applyInput = (input?) => {
   let isNotSaveLoad = (cmd) => !cmd.toLowerCase().startsWith('save')
     && !cmd.toLowerCase().startsWith('load')
     && !cmd.toLowerCase().startsWith('export')
@@ -803,7 +806,7 @@ let setInput = (str) => {
 
 // render output, with optional class
 // (string | array | fn -> string) -> nothing
-let println = (line, className) => {
+let println = (line?, className?) => {
   // bail if string is null or undefined
   if (!line) {
     return;
@@ -812,12 +815,11 @@ let println = (line, className) => {
   let str =
     // if this is an array of lines, pick one at random
     Array.isArray(line) ? pickOne(line)
-    // if this is a method returning a string, evaluate it
-    : typeof line  === 'function' ? line()
-    // otherwise, line should be a string
-    : line;
+      // if this is a method returning a string, evaluate it
+      : typeof line === 'function' ? line()
+        // otherwise, line should be a string
+        : line;
 
-  const output = document.querySelector('#output');
   const newLine = document.createElement('div');
 
   if (className) {
@@ -901,7 +903,7 @@ let autocomplete = () => {
     const longestCommonStartingSubstring = (arr1) => {
       const arr = arr1.concat().sort();
       const a1 = arr[0];
-      const a2 = arr[arr.length-1];
+      const a2 = arr[arr.length - 1];
       const L = a1.length;
       let i = 0;
       while (i < L && a1.charAt(i) === a2.charAt(i)) {
@@ -910,7 +912,7 @@ let autocomplete = () => {
       return a1.substring(0, i);
     };
 
-    input.value = [...wordsSansStub,longestCommonStartingSubstring(matches)].join(' ');
+    input.value = [...wordsSansStub, longestCommonStartingSubstring(matches)].join(' ');
   } else {
     input.value = [...wordsSansStub, matches[0]].join(' ');
   }
@@ -948,11 +950,11 @@ let getRoom = (id) => disk.rooms.find(room => room.id === id);
 
 // remove punctuation marks from a string
 // string -> string
-let removePunctuation = str => str.replace(/[.,\/#?!$%\^&\*;:{}=\_`~()]/g,"");
+let removePunctuation = str => str.replace(/[.,\/#?!$%\^&\*;:{}=\_`~()]/g, "");
 
 // remove extra whitespace from a string
 // string -> string
-let removeExtraSpaces = str => str.replace(/\s{2,}/g," ");
+let removeExtraSpaces = str => str.replace(/\s{2,}/g, " ");
 
 // move the player into room with passed ID
 // string -> nothing
@@ -979,7 +981,7 @@ let enterRoom = (id) => {
   disk.roomId = id;
 
   if (typeof room.onEnter === 'function') {
-    room.onEnter({disk, println, getRoom, enterRoom});
+    room.onEnter({ disk, println, getRoom, enterRoom });
   }
 
   // reset any active conversation
@@ -1074,7 +1076,7 @@ let endConversation = () => {
 
 // load the passed disk and start the game
 // disk -> nothing
-let loadDisk = (uninitializedDisk) => {
+let loadDisk = (uninitializedDisk?) => {
   if (uninitializedDisk) {
     diskFactory = uninitializedDisk;
     // start listening for user input
@@ -1093,7 +1095,7 @@ let loadDisk = (uninitializedDisk) => {
 };
 
 // append any pending lines to the DOM each frame
-let print = () => {
+let printText = () => {
   if (printQueue.length) {
     while (printQueue.length) {
       output.appendChild(printQueue.shift());
@@ -1103,10 +1105,10 @@ let print = () => {
     window.scrollTo(0, document.body.scrollHeight);
   }
 
-  requestAnimationFrame(print);
+  requestAnimationFrame(printText);
 }
 
-requestAnimationFrame(print);
+requestAnimationFrame(printText);
 
 // npm support
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
