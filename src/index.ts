@@ -1,8 +1,8 @@
 /* eslint-disable no-useless-escape */
 
 // global properties, assigned with let for easy overriding by the user
-let diskFactory: GameDiskFactory;
-let disk: GameDisk;
+let diskFactory: GameDiskObject | GameDiskFactory;
+let disk: GameDiskObject;
 
 // store user input history
 let inputs: string[] = [];
@@ -22,7 +22,7 @@ const output = document.querySelector('#output') as HTMLDivElement;
 
 // add any default values to the disk
 // disk -> disk
-const init = (disk: GameDisk) => {
+const init = (disk: GameDiskObject) => {
   const initializedDisk = Object.assign({}, disk);
   initializedDisk.rooms = disk.rooms.map((room) => {
     // number of times a room has been visited
@@ -303,7 +303,7 @@ const getExit = (dir: string, exits: Room['exits']) => exits.find(exit =>
 
 // shortcuts for cardinal directions
 // (allows player to type e.g. 'go n')
-const shortcuts = {
+const shortcuts: { [key: string]: string } = {
   n: 'north',
   s: 'south',
   e: 'east',
@@ -1067,7 +1067,7 @@ const conversationIncludesTopic = (conversation: unknown, keyword: string) => {
 
 // determine whether the passed topic is available for discussion
 // character, topic -> boolean
-const topicIsAvailable = (character: Character, topic: Topic) => {
+const topicIsAvailable = (character: { chatLog: string[] }, topic: Topic) => {
   // topic has no prerequisites, or its prerequisites have been met
   const prereqsOk = !topic.prereqs || topic.prereqs.every(keyword => character.chatLog.includes(keyword));
   // topic is not removed after read, or it hasn't been read yet

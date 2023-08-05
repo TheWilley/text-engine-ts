@@ -5,7 +5,7 @@ const demoDisk = () => ({
       id: 'foyer', // unique ID for this room
       name: 'The Foyer', // room name (shown when player enters the room)
       // room description (shown when player first enters the room)
-      desc:  `Welcome to the **TEXT-ENGINE** demo disk! This disk is a text adventure game designed to introduce you to the features available to you in **text-engine**. Using this engine, you can make a text game of your own.
+      desc: `Welcome to the **TEXT-ENGINE** demo disk! This disk is a text adventure game designed to introduce you to the features available to you in **text-engine**. Using this engine, you can make a text game of your own.
 
       Type **LOOK** to have a look around.`,
       // optional callback when player issues the LOOK command
@@ -28,14 +28,14 @@ const demoDisk = () => ({
       items: [
         {
           name: 'tall window', // the item's name
-          desc: `All you can see are puffy white clouds over a blue sky.`, // description shown when player looks at the item
+          desc: 'All you can see are puffy white clouds over a blue sky.', // description shown when player looks at the item
         },
         {
           name: ['monstera', 'plant', 'swiss cheese'], // player can refer to this item by any of these names
           desc: `Sometimes called a Swiss Cheese plant, no office is complete without one. It has lovely, large leaves. This is the biggest you\'ve ever seen.
 
           There's **SOMETHING SHINY** in the pot.`,
-          block: `It's far too large for you to carry.`, // optional reason player cannot pick up this item
+          block: 'It\'s far too large for you to carry.', // optional reason player cannot pick up this item
           // when player looks at the plant, they discover a shiny object which turns out to be a key
           onLook: () => {
             if (getItem('shiny')) {
@@ -51,20 +51,20 @@ const demoDisk = () => ({
               onUse() {
                 const room = getRoom(disk.roomId);
                 if (room.id === 'foyer') {
-                  println(`There's nothing to unlock in the foyer.`);
+                  println('There\'s nothing to unlock in the foyer.');
                 } else if (room.id === 'reception') {
-                  println(`You unlock the door to the **EAST**!`);
+                  println('You unlock the door to the **EAST**!');
                   // remove the block
                   const exit = getExit('east', room.exits);
                   delete exit.block;
                   // this item can only be used once
                   const key = getItem('shiny');
-                  key.onUse = () => println(`The lab has already been unlocked.`);
+                  key.onUse = () => println('The lab has already been unlocked.');
                 } else {
-                  println(`There's nothing to unlock here.`);
+                  println('There\'s nothing to unlock here.');
                 }
               },
-              desc: `It's a silver **KEY**!`,
+              desc: 'It\'s a silver **KEY**!',
               onLook() {
                 const key = getItem('shiny');
 
@@ -72,14 +72,14 @@ const demoDisk = () => ({
                 key.name.unshift('silver key');
 
                 // let's also update the description
-                key.desc = `It has a blue cap with the word "LAB" printed on it.`;
+                key.desc = 'It has a blue cap with the word "LAB" printed on it.';
 
                 // remove this method (we don't need it anymore)
                 delete key.onLook;
               },
               isTakeable: true,
               onTake() {
-                println(`You took it.`);
+                println('You took it.');
                 // update the monstera's description, removing everything starting at the line break
                 const plant = getItem('plant');
                 plant.desc = plant.desc.slice(0, plant.desc.indexOf('\n'));
@@ -89,7 +89,7 @@ const demoDisk = () => ({
         },
         {
           name: 'dime',
-          desc: `Wow, ten cents.`,
+          desc: 'Wow, ten cents.',
           isTakeable: true, // allow the player to TAKE this item
           onTake: () => println(`You bend down and pick up the tiny, shiny coin.
 
@@ -106,7 +106,7 @@ const demoDisk = () => ({
       // places the player can go from this room
       exits: [
         // GO NORTH command leads to the Reception Desk
-        {dir: 'north', id: 'reception'},
+        { dir: 'north', id: 'reception' },
       ],
     },
     {
@@ -127,12 +127,12 @@ const demoDisk = () => ({
         },
         {
           name: 'door',
-          desc: `There are 4" metal letters nailed to the door. They spell out: "RESEARCH LAB".`,
+          desc: 'There are 4" metal letters nailed to the door. They spell out: "RESEARCH LAB".',
           onUse() {
             const reception = getRoom('reception');
             const exit = getExit('east', reception.exits);
             if (exit.block) {
-              println(`It's locked.`);
+              println('It\'s locked.');
             } else {
               goDir('east');
             }
@@ -140,19 +140,19 @@ const demoDisk = () => ({
         },
         {
           name: 'gate',
-          desc: `The guilded gate is blocking the way to the **STAIRS**.`,
+          desc: 'The guilded gate is blocking the way to the **STAIRS**.',
         },
         {
           name: ['stairs', 'staircase'],
-          desc: `They lead up to a door. If you squint, you can make out the word "ADVANCED" on the door.`,
-          onUse: () => println(`Try typing GO UPSTAIRS (once you've unlocked the gate).`),
+          desc: 'They lead up to a door. If you squint, you can make out the word "ADVANCED" on the door.',
+          onUse: () => println('Try typing GO UPSTAIRS (once you\'ve unlocked the gate).'),
         },
       ],
       exits: [
         // exits with a BLOCK cannot be used, but print a message instead
-        {dir: 'east', id: 'lab', block: `The door is locked.`},
-        {dir: ['upstairs', 'up'], id: 'advanced', block: `There's a locked GATE blocking your path.`},
-        {dir: 'south', id: 'foyer'},
+        { dir: 'east', id: 'lab', block: 'The door is locked.' },
+        { dir: ['upstairs', 'up'], id: 'advanced', block: 'There\'s a locked GATE blocking your path.' },
+        { dir: 'south', id: 'foyer' },
       ],
     },
     {
@@ -162,7 +162,7 @@ const demoDisk = () => ({
 
       To the **WEST** is the door to the Reception Desk.`,
       exits: [
-        {dir: 'west', id: 'reception'},
+        { dir: 'west', id: 'reception' },
       ],
     },
     {
@@ -172,7 +172,7 @@ const demoDisk = () => ({
 
       **DOWNSTAIRS** is the Reception Desk.`,
       exits: [
-        {dir: ['downstairs', 'down'], id: 'reception'},
+        { dir: ['downstairs', 'down'], id: 'reception' },
       ],
     },
   ],
@@ -182,7 +182,7 @@ const demoDisk = () => ({
       roomId: 'reception',
       desc: 'He looks... helpful!', // printed when the player looks at the character
       // optional callback, run when the player talks to this character
-      onTalk: () => println(`"Hi," he says, "How can I help you?"`),
+      onTalk: () => println('"Hi," he says, "How can I help you?"'),
       // things the player can discuss with the character
       topics: [
         {
@@ -191,12 +191,12 @@ const demoDisk = () => ({
           // optional callback, run when the player selects this option
           onSelected() {
             println(`**BENJI** pulls a strange-looking *item* out of a desk drawer.
-            "Here, take this." he says. "Try typing **USE STYLE-CHANGER**. That should give you some ideas."`)
+            "Here, take this." he says. "Try typing **USE STYLE-CHANGER**. That should give you some ideas."`);
 
             // add a special item to the player's inventory
             disk.inventory.push({
               name: ['style-changer', 'stylechanger'],
-              desc: `This is a magical item. Type **USE STYLE-CHANGER** to try it out!`,
+              desc: 'This is a magical item. Type **USE STYLE-CHANGER** to try it out!',
               onUse: () => {
                 const currentStylesheet = document.getElementById('styles').getAttribute('href');
                 const newName = currentStylesheet.includes('modern') ? 'retro' : 'modern';
@@ -220,7 +220,7 @@ const demoDisk = () => ({
           removeOnRead: true,
         },
         {
-          option: `Tell me about **EXITS**`,
+          option: 'Tell me about **EXITS**',
           // text printed when the player selects this option by typing the keyword (EXITS)
           line: `"Sure! It looks like you've already figured out you can type **GO NORTH** to use an exit to the north. But did you know you can just type **GO** to get a list of exits from the room? If an exit leads you to a room you've been to before, it will even tell you the room's name.
 
@@ -233,23 +233,23 @@ const demoDisk = () => ({
           removeOnRead: true,
         },
         {
-          option: `Remind me what's up with that **DOOR** to the east...`,
-          line: `"The exit has a *block*. Specifically, the **DOOR** it locked. You'll need to find a **KEY** to open it."`,
+          option: 'Remind me what\'s up with that **DOOR** to the east...',
+          line: '"The exit has a *block*. Specifically, the **DOOR** it locked. You\'ll need to find a **KEY** to open it."',
           prereqs: ['exits'], // optional list of prerequisite topics that must be discussed before this option is available
         },
         {
-          option: `Remind me what's up with these **STAIRS**...`,
-          line: `"The **STAIRS** are blocked by a locked **GATE**. There isn't a key, so you need to find another way to unlock it."`,
+          option: 'Remind me what\'s up with these **STAIRS**...',
+          line: '"The **STAIRS** are blocked by a locked **GATE**. There isn\'t a key, so you need to find another way to unlock it."',
           prereqs: ['exits'],
         },
         {
-          option: `How do I use **AUTOCOMPLETE**?`,
-          line: `"If you type a few letters and press TAB, the engine will guess what you're trying to say."`,
+          option: 'How do I use **AUTOCOMPLETE**?',
+          line: '"If you type a few letters and press TAB, the engine will guess what you\'re trying to say."',
           removeOnRead: true,
         },
         {
-          option: `If I want to **REPEAT** a command, do I have to type it again?`,
-          line: `"Wow, it's almost like you're reading my mind. No, you can just press the UP ARROW to see commands you've previously entered."`,
+          option: 'If I want to **REPEAT** a command, do I have to type it again?',
+          line: '"Wow, it\'s almost like you\'re reading my mind. No, you can just press the UP ARROW to see commands you\'ve previously entered."',
           removeOnRead: true,
         },
       ],
@@ -257,16 +257,16 @@ const demoDisk = () => ({
     {
       name: 'blue robot',
       roomId: 'lab',
-      onTalk: () => println(`"I can tell you about making games with text-engine," they explain. "What would you like to know?"`),
+      onTalk: () => println('"I can tell you about making games with text-engine," they explain. "What would you like to know?"'),
       topics: [
         {
-          option: `What is **TEXT-ENGINE**?`,
+          option: 'What is **TEXT-ENGINE**?',
           line: `**text-engine** is a a JavaScript REPL-style, text-based adventure game engine. It's small and easy to use with no dependencies.
 
           The engine uses a disk metaphor for the data which represents your game, like the floppy disks of yore.`
         },
         {
-          option: `How do I get **STARTED**?`,
+          option: 'How do I get **STARTED**?',
           line: `To create your own adventure, you can use an existing game disk as a template. You will find the disk you're playing now as well as others in the folder called "game-disks". You can edit these in any text or code editor.
 
           Include the 'game disk' (JSON data) in index.html and load it with loadDisk(myGameData). You can look at <a href="https://github.com/okaybenji/text-engine/blob/master/index.html" target="_blank">the included index.html file</a> for an example.
@@ -274,7 +274,7 @@ const demoDisk = () => ({
           You are welcome to ask me about any topic you like, but you might find it easier just to browse a few and then dive in to making something of your own. You can return to ask me questions at any time.`
         },
         {
-          option: `What is a **DISK**?`,
+          option: 'What is a **DISK**?',
           line: `A disk is a JavaScript function returning an object which describes your game. At minimum, the returned object must have these two top-level properties:
 
           **roomId** (*string*) - This is a reference to the room the player currently occupies. Set this to the **ID** of the room the player should start in.
@@ -290,7 +290,7 @@ const demoDisk = () => ({
           You can also attach any arbitrary data you wish. For instance, you could have a number called "health" that you use to keep track of your player's condition.`
         },
         {
-          option: `What is a **ROOM**?`,
+          option: 'What is a **ROOM**?',
           line: `A room is a JavaScript object. You usually want a room to have the following properties:
 
           **name** (*string*) - The name of the room will be displayed each time it is entered.
@@ -312,7 +312,7 @@ const demoDisk = () => ({
           **onLook** (*function*) - Function to be called when the player issues the **LOOK** command in this room.`
         },
         {
-          option: `What is an **EXIT**?`,
+          option: 'What is an **EXIT**?',
           line: `An exit is a JavaScript object with the following properties:
 
           **dir** (*string*) - The direction the player must go to leave via this exit (e.g. "north").
@@ -324,7 +324,7 @@ const demoDisk = () => ({
           **block** (*string*) - Line to be printed if the player tries to use this exit. If this property exists, the player cannot use the exit.`
         },
         {
-          option: `What is an **ITEM**?`,
+          option: 'What is an **ITEM**?',
           line: `An item is a JavaScript object with a name:
 
           **name** (*string* or *array*) - How the item is referred to by the game and the player. Using an array allows you to define multiple string names for the item. You might do this if you expect the player may call it by more than one name. For instance <code>['basketball', 'ball']</code>. When listing items in a room, the engine will always use the first name in the list.
@@ -342,7 +342,7 @@ const demoDisk = () => ({
           **onTake** (*function*) - Function to be called when the player takes the item.`
         },
         {
-          option: `What is a **CHARACTER**?`,
+          option: 'What is a **CHARACTER**?',
           line: `You're talking to one! A character is a JavaScript object with the following properties:
 
           **name** (*string or array*) - How the character is referred to by the game and the player. Using an array allows you to define multiple string names for the character. You might do this if you expect the player may call them by more than one name. For instance <code>['Steve', 'waiter', 'garçon']</code>. When listing characters in a room, the engine will always use the first name in the list.
@@ -360,7 +360,7 @@ const demoDisk = () => ({
           **onLook** (*function*) - Function to be called when the player looks at the character.`
         },
         {
-          option: `What is a **TOPIC**?`,
+          option: 'What is a **TOPIC**?',
           line: `A topic is something you can talk to a character about, and as you may have guessed, is a JavaScript object. A topic requires an *option*, and either a *line* or an *onSelected* function, or both:
 
           **option** (*string*) - The choice presented to the player, with a KEYWORD the player can type to select it. If the keyword is written in uppercase, the engine can identify it automatically. (Otherwise, you'll need to specify the keyword in a separate property.) The option can be just the keyword itself, or any string containing the keyword.
@@ -378,22 +378,22 @@ const demoDisk = () => ({
           **keyword** (*string*) - The word the player must type to select this option. This property is only required if the option itself does not contain a keyword written in uppercase.`
         },
         {
-          option: `Can you unlock the **GATE** to the stairs by the reception desk?`,
-          line: `Actually, you can do that yourself! This disk happens to have a secret, custom **UNLOCK** command. This powerful command will remove blocks on any exit. Just type **UNLOCK** to use it.`,
+          option: 'Can you unlock the **GATE** to the stairs by the reception desk?',
+          line: 'Actually, you can do that yourself! This disk happens to have a secret, custom **UNLOCK** command. This powerful command will remove blocks on any exit. Just type **UNLOCK** to use it.',
         },
       ],
     },
     {
       name: 'red robot',
       roomId: 'advanced',
-      onTalk: () => println(`"I can tell you about the JavaScript functions available to you when you use text-engine," they explain. "What would you like to know about?"`),
+      onTalk: () => println('"I can tell you about the JavaScript functions available to you when you use text-engine," they explain. "What would you like to know about?"'),
       topics: [
         {
-          option: `Tell me about **FUNCTIONS**`,
-          line: `Functions are reuseable bits of JavaScript code. **text-engine** provides several of these which you can use, for instance in callbacks like <code>onUse</code>, <code>onLook</code>, <code>onEnter</code>, etc.`
+          option: 'Tell me about **FUNCTIONS**',
+          line: 'Functions are reuseable bits of JavaScript code. **text-engine** provides several of these which you can use, for instance in callbacks like <code>onUse</code>, <code>onLook</code>, <code>onEnter</code>, etc.'
         },
         {
-          option: `Tell me about **COMMANDS**`,
+          option: 'Tell me about **COMMANDS**',
           line: `Every command a player can issue in the game has a corresponding function in **text-engine**.
 
           For instance, there's a function called <code>go</code> that gets called when the player types **GO**.
@@ -401,7 +401,7 @@ const demoDisk = () => ({
           You can add your own custom commands, like the **UNLOCK** command you used to get access to this room. And if existing commands don't work how you want them to, you can ever override them by reassigning them to your own function code.`,
         },
         {
-          option: `Tell me about **PRINTLN**`,
+          option: 'Tell me about **PRINTLN**',
           line: `<code>println</code> is a function you can use to print a line of text to the console. It takes up to two arguments:
 
           **line** (*string*) - The text to be printed.
@@ -409,25 +409,25 @@ const demoDisk = () => ({
           **className** (*string*) - Optional. The name of a CSS class to apply to the line. You can use this to style the text.`
         },
         {
-          option: `Tell me about **PICKONE**`,
+          option: 'Tell me about **PICKONE**',
           line: `<code>pickOne</code> is a function you can use to get a random item from an array. It takes one argument:
 
           **arr** (*array*) - The array with the items to pick from.`
         },
         {
-          option: `Tell me about **GETROOM**`,
+          option: 'Tell me about **GETROOM**',
           line: `<code>getRoom</code> is a function you can use to get a reference to a room by its ID. It takes one argument:
 
           **id** (*string*) - The unique identifier for the room.`
         },
         {
-          option: `Tell me about **ENTERROOM**`,
+          option: 'Tell me about **ENTERROOM**',
           line: `<code>enterRoom</code> is a function you can use to move the player to particular room. It takes one argument:
 
           **id** (*string*) - The unique identifier for the room.`
         },
         {
-          option: `Tell me about **GETCHARACTER**`,
+          option: 'Tell me about **GETCHARACTER**',
           line: `<code>getCharacter</code> is a function you can use to get a reference to a character. It takes up to two arguments:
 
           **name** (*string*) - The character's name.
@@ -435,19 +435,19 @@ const demoDisk = () => ({
           **chars** (*array*) - Optional. The array of characters to search. Defaults to searching all characters on the disk.`
         },
         {
-          option: `Tell me about **GETCHARACTERSINROOM**`,
+          option: 'Tell me about **GETCHARACTERSINROOM**',
           line: `<code>getCharactersInRoom</code> is a function you can use to get an array containing references to each character in a particular room. It takes one argument:
 
           **roomId** (*string*) - The unique identifier for the room.`
         },
         {
-          option: `Tell me about **GETITEM**`,
+          option: 'Tell me about **GETITEM**',
           line: `<code>getItem</code> is a function you can use to get a reference to an item in the player's inventory or in the current room. It takes one argument:
 
           **name** (*string*) - The name of the item.`
         },
         {
-          option: `Tell me about **GETITEMINROOM**`,
+          option: 'Tell me about **GETITEMINROOM**',
           line: `<code>getItemInRoom</code> is a function you can use to get a reference to an item in any room. It takes two arguments:
 
           **itemName** (*string*) - The name of the item.
@@ -455,14 +455,14 @@ const demoDisk = () => ({
           **roomId** (*string*) - The unique identifier for the room.`
         },
         {
-          option: `Tell me about **GETITEMININVENTORY**`,
+          option: 'Tell me about **GETITEMININVENTORY**',
           line: `<code>getItemInInventory</code> is a function you can use to get a reference to an item in the player's inventory. It takes one argument:
 
           **name** (*string*) - The name of the item.`
         },
         {
-          option: `Tell me about **OTHER** functions`,
-          line: `There are several other functions available in the engine! Feel free to take a peek at the source code (<a href="https://github.com/okaybenji/text-engine/blob/master/index.js" target="_blank">index.js</a>). It's designed to be open and simple to use and to customize.`
+          option: 'Tell me about **OTHER** functions',
+          line: 'There are several other functions available in the engine! Feel free to take a peek at the source code (<a href="https://github.com/okaybenji/text-engine/blob/master/index.js" target="_blank">index.js</a>). It\'s designed to be open and simple to use and to customize.'
         },
       ],
     },
@@ -486,10 +486,10 @@ const unlock = () => {
   });
 
   // update the description of the gate
-  getItemInRoom('gate', 'reception').desc = `The guilded gate leads to the staircase.`;
+  getItemInRoom('gate', 'reception').desc = 'The guilded gate leads to the staircase.';
 
-  println(`All **exits** have been unblocked!`);
+  println('All **exits** have been unblocked!');
 };
 
 // attach it to the zero-argument commands object on the disk
-commands[0] = Object.assign(commands[0], {unlock});
+commands[0] = Object.assign(commands[0], { unlock });
