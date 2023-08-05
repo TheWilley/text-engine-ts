@@ -200,9 +200,9 @@ const applyInputs = (string: string) => {
 
 // list player inventory
 const inv = () => {
-  const items = disk.inventory.filter(item => !item.isHidden);
+  const items = disk.inventory?.filter(item => !item.isHidden);
 
-  if (!items.length) {
+  if (!items?.length) {
     println('You don\'t have any items in your inventory.');
     return;
   }
@@ -217,11 +217,11 @@ const inv = () => {
 const look = () => {
   const room = getRoom(disk.roomId);
 
-  if (typeof room.onLook === 'function') {
+  if (typeof room?.onLook === 'function') {
     room.onLook({ disk, println });
   }
 
-  println(room.desc);
+  println(room?.desc);
 };
 
 // look in the passed way
@@ -267,8 +267,7 @@ const lookAt = (args: [null, ...string[]]) => {
 // list available exits
 const go = () => {
   const room = getRoom(disk.roomId);
-
-  const exits = room.exits.filter(exit => !exit.isHidden);
+  const exits = room?.exits.filter(exit => !exit.isHidden);
 
   if (!exits) {
     println('There\'s nowhere to go.');
@@ -283,7 +282,7 @@ const go = () => {
       return;
     }
 
-    const dir = getName(exit.dir).toUpperCase();
+    const dir = getName(exit.dir)?.toUpperCase();
     // include room name if player has been there before
     const directionName = rm.visits > 0
       ? `${dir} - ${rm.name}`
@@ -318,8 +317,7 @@ const shortcuts: { [key: string]: string } = {
 // string -> nothing
 const goDir = (dir: string) => {
   const room = getRoom(disk.roomId);
-
-  const exits = room.exits;
+  const exits = room?.exits;
 
   if (!exits) {
     println('There\'s nowhere to go.');
@@ -363,7 +361,7 @@ const talk = () => {
   const characters = getCharactersInRoom(disk.roomId);
 
   // assume players wants to talk to the only character in the room
-  if (characters.length === 1) {
+  if (characters?.length === 1) {
     talkToOrAboutX('to', getName(characters[0].name));
     return;
   }
@@ -384,8 +382,8 @@ const talkToOrAboutX = (preposition: string, x: string) => {
   }
 
   const character =
-    preposition === 'to' && getCharacter(x, getCharactersInRoom(room.id))
-      ? getCharacter(x, getCharactersInRoom(room.id))
+    preposition === 'to' && getCharacter(x, getCharactersInRoom(room?.id))
+      ? getCharacter(x, getCharactersInRoom(room?.id))
       : disk.conversant;
   let topics: Topic[];
 
@@ -399,12 +397,12 @@ const talkToOrAboutX = (preposition: string, x: string) => {
 
       if (availableTopics.length) {
         println('What would you like to discuss?');
-        availableTopics.forEach(topic => println(`${bullet} ${topic.option ? topic.option : topic.keyword.toUpperCase()}`));
+        availableTopics.forEach(topic => println(`${bullet} ${topic.option ? topic.option : topic.keyword?.toUpperCase()}`));
         println(`${bullet} NOTHING`);
       } else {
         // if character isn't handling onTalk, let the player know they are out of topics
-        if (!character.onTalk) {
-          println(`You have nothing to discuss with ${getName(character.name)} at this time.`);
+        if (!character?.onTalk) {
+          println(`You have nothing to discuss with ${getName(character?.name)} at this time.`);
         }
         endConversation();
       }
@@ -422,10 +420,13 @@ const talkToOrAboutX = (preposition: string, x: string) => {
       return;
     }
 
-    if (!getCharacter(getName(x), getCharactersInRoom(room.id))) {
+    if (!getCharacter(getName(x), getCharactersInRoom(room?.id))) {
       println('There is no one here by that name.');
       return;
     }
+
+    // If character does not exist, bail out.
+    if (!character) return;
 
     if (!character.topics) {
       println(`You have nothing to discuss with ${getName(character.name)} at this time.`);
@@ -460,7 +461,7 @@ const talkToOrAboutX = (preposition: string, x: string) => {
       return;
     }
     const character = eval(disk.conversant);
-    if (getCharactersInRoom(room.id).includes(disk.conversant)) {
+    if (getCharactersInRoom(room?.id)?.includes(disk.conversant)) {
       const response = x.toLowerCase();
       if (response === 'nothing') {
         endConversation();
@@ -468,7 +469,7 @@ const talkToOrAboutX = (preposition: string, x: string) => {
       } else if (disk.conversation && disk.conversation[response]) {
         disk.conversation[response].onSelected();
       } else {
-        const topic = disk.conversation.length && conversationIncludesTopic(disk.conversation, response);
+        const topic = disk.conversation?.length && conversationIncludesTopic(disk.conversation, response);
         const isAvailable = topic && topicIsAvailable(character, topic);
         if (isAvailable) {
           if (topic.line) {
@@ -503,7 +504,7 @@ const talkToOrAboutX = (preposition: string, x: string) => {
 // list takeable items in room
 const take = () => {
   const room = getRoom(disk.roomId);
-  const items = (room.items || []).filter(item => item.isTakeable && !item.isHidden);
+  const items = (room?.items || []).filter(item => item.isTakeable && !item.isHidden);
 
   if (!items.length) {
     println('There\'s nothing to take.');
@@ -519,12 +520,12 @@ const take = () => {
 const takeItem = (itemName: string) => {
   const room = getRoom(disk.roomId);
   const findItem = (item: Item) => objectHasName(item, itemName);
-  let itemIndex = room.items && room.items.findIndex(findItem);
+  let itemIndex = room?.items && room.items.findIndex(findItem);
 
   if (typeof itemIndex === 'number' && itemIndex > -1) {
     const item = room.items[itemIndex];
     if (item.isTakeable) {
-      disk.inventory.push(item);
+      disk.inventory?.push(item);
       room.items.splice(itemIndex, 1);
 
       if (typeof item.onTake === 'function') {
@@ -540,7 +541,7 @@ const takeItem = (itemName: string) => {
       }
     }
   } else {
-    itemIndex = disk.inventory.findIndex(findItem);
+    itemIndex = disk.inventory?.findIndex(findItem);
     if (typeof itemIndex === 'number' && itemIndex > -1) {
       println('You already have that.');
     } else {
@@ -601,7 +602,7 @@ const useItem = (itemName: string) => {
 // list items in room
 const items = () => {
   const room = getRoom(disk.roomId);
-  const items = (room.items || []).filter(item => !item.isHidden);
+  const items = (room?.items || []).filter(item => !item.isHidden);
 
   if (!items.length) {
     println('There\'s nothing here.');
@@ -775,7 +776,7 @@ const applyInput = (input?: string) => {
     useItem(args[0]);
   } else if (args.length >= commands.length) {
     exec(commands[commands.length - 1][command], args);
-  } else if (room.exits && getExit(command, room.exits)) {
+  } else if (room?.exits && getExit(command, room.exits)) {
     // handle shorthand direction command, e.g. "EAST" instead of "GO EAST"
     goDir(command);
   } else if (disk.conversation && (disk.conversation[command] || conversationIncludesTopic(disk.conversation, command))) {
@@ -861,7 +862,7 @@ const autocomplete = () => {
   const room = getRoom(disk.roomId);
   const words = input.value.toLowerCase().trim().split(/\s+/);
   const wordsSansStub = words.slice(0, words.length - 1);
-  const itemNames = (room.items || []).concat(disk.inventory).map(item => item.name);
+  const itemNames = (room?.items || []).concat(disk.inventory).map(item => item.name);
 
   const stub = words[words.length - 1];
   let options;
@@ -885,12 +886,12 @@ const autocomplete = () => {
       talk: ['to', 'about'],
       take: itemNames,
       use: itemNames,
-      go: (room.exits || []).map(exit => exit.dir),
+      go: (room?.exits || []).map(exit => exit.dir),
       look: ['at'],
     };
     options = optionMap[words[0]];
   } else if (words.length === 3) {
-    const characterNames = (getCharactersInRoom(room.id) || []).map(character => character.name);
+    const characterNames = (getCharactersInRoom(room?.id) || []).map(character => character.name);
     const optionMap = {
       to: characterNames,
       at: characterNames.concat(itemNames),
@@ -948,7 +949,7 @@ const pickOne = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 
 // return the first name if it's an array, or the only name
 // string | array -> string
-const getName = (name: string | string[]) => typeof name === 'object' ? name[0] : name;
+const getName = (name: string | string[] | undefined) => typeof name === 'object' ? name[0] : name;
 
 // retrieve room by its ID
 // string -> room
@@ -1007,23 +1008,23 @@ const objectHasName = (obj: Item, name: string) => {
 
 // get a list of all characters in the passed room
 // string -> characters
-const getCharactersInRoom = (roomId: string) => disk.characters.filter(c => c.roomId === roomId);
+const getCharactersInRoom = (roomId: string | undefined) => disk.characters?.filter(c => c.roomId === roomId);
 
 // get a character by name from a list of characters
 // string, characters -> character
-const getCharacter = (name: string, chars = disk.characters) => chars.find(char => objectHasName(char, name));
+const getCharacter = (name: string, chars = disk.characters) => chars?.find(char => objectHasName(char, name));
 
 // get item by name from room with ID
 // string, string -> item
 const getItemInRoom = (itemName: string, roomId: string) => {
   const room = getRoom(roomId);
 
-  return room.items && room.items.find(item => objectHasName(item, itemName));
+  return room?.items && room.items.find(item => objectHasName(item, itemName));
 };
 
 // get item by name from inventory
 // string -> item
-const getItemInInventory = (name: string) => disk.inventory.find(item => objectHasName(item, name));
+const getItemInInventory = (name: string) => disk.inventory?.find(item => objectHasName(item, name));
 
 // get item by name
 // string -> item
@@ -1062,16 +1063,16 @@ const conversationIncludesTopic = (conversation: unknown, keyword: string) => {
     return disk.conversation.find(t => getKeywordFromTopic(t) === keyword);
   }
 
-  return disk.conversation[keyword];
+  return disk.conversation?.[keyword];
 };
 
 // determine whether the passed topic is available for discussion
 // character, topic -> boolean
-const topicIsAvailable = (character: { chatLog: string[] }, topic: Topic) => {
+const topicIsAvailable = (character: Character | undefined, topic: Topic) => {
   // topic has no prerequisites, or its prerequisites have been met
-  const prereqsOk = !topic.prereqs || topic.prereqs.every(keyword => character.chatLog.includes(keyword));
+  const prereqsOk = !topic.prereqs || topic.prereqs.every(keyword => character?.chatLog?.includes(keyword));
   // topic is not removed after read, or it hasn't been read yet
-  const readOk = !topic.removeOnRead || !character.chatLog.includes(getKeywordFromTopic(topic));
+  const readOk = !topic.removeOnRead || !character?.chatLog?.includes(getKeywordFromTopic(topic));
 
   return prereqsOk && readOk;
 };

@@ -1,3 +1,5 @@
+/* eslint-disable no-empty-pattern */
+
 /*
 Global type defentions would be a bad idea here if this was a library, but per https://www.reddit.com/r/typescript/comments/126im5c/dts_files_on_a_ts_project/
 it would be fine here since this is more of an app
