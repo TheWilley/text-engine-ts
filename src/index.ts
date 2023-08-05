@@ -215,7 +215,6 @@ let inv = () => {
 let look = () => {
   const room = getRoom(disk.roomId);
 
-  if(!room) return;
   if (typeof room.onLook === 'function') {
     room.onLook({ disk, println });
   }
@@ -229,7 +228,7 @@ let lookThusly = (str: string) => println(`You look ${str}.`);
 
 // look at the passed item or character
 // array -> nothing
-let lookAt = (args: [null, string]) => {
+let lookAt = (args: [null, ...string[]]) => {
   const [_, name] = args;
   const item = getItemInInventory(name) || getItemInRoom(name, disk.roomId);
 
@@ -266,6 +265,7 @@ let lookAt = (args: [null, string]) => {
 // list available exits
 let go = () => {
   const room = getRoom(disk.roomId);
+
   const exits = room.exits.filter(exit => !exit.isHidden);
 
   if (!exits) {
@@ -293,7 +293,7 @@ let go = () => {
 
 // find the exit with the passed direction in the given list
 // string, array -> exit
-let getExit = (dir, exits) => exits.find(exit =>
+let getExit = (dir: string, exits: Room['exits']) => exits.find(exit =>
   Array.isArray(exit.dir)
     ? exit.dir.includes(dir)
     : exit.dir === dir
@@ -314,8 +314,9 @@ let shortcuts = {
 
 // go the passed direction
 // string -> nothing
-let goDir = (dir) => {
+let goDir = (dir: string) => {
   const room = getRoom(disk.roomId);
+
   const exits = room.exits;
 
   if (!exits) {
@@ -372,7 +373,7 @@ let talk = () => {
 
 // speak to someone or about some topic
 // string, string -> nothing
-let talkToOrAboutX = (preposition, x) => {
+let talkToOrAboutX = (preposition: string, x: string) => {
   const room = getRoom(disk.roomId);
 
   if (preposition !== 'to' && preposition !== 'about') {
@@ -384,7 +385,7 @@ let talkToOrAboutX = (preposition, x) => {
     preposition === 'to' && getCharacter(x, getCharactersInRoom(room.id))
       ? getCharacter(x, getCharactersInRoom(room.id))
       : disk.conversant;
-  let topics;
+  let topics: Topic[];
 
   // give the player a list of topics to choose from for the character
   const listTopics = () => {
@@ -513,9 +514,9 @@ let take = () => {
 
 // take the item with the given name
 // string -> nothing
-let takeItem = (itemName) => {
+let takeItem = (itemName: string) => {
   const room = getRoom(disk.roomId);
-  const findItem = item => objectHasName(item, itemName);
+  const findItem = (item: Item) => objectHasName(item, itemName);
   let itemIndex = room.items && room.items.findIndex(findItem);
 
   if (typeof itemIndex === 'number' && itemIndex > -1) {
@@ -567,7 +568,7 @@ let use = () => {
 
 // use the item with the given name
 // string -> nothing
-let useItem = (itemName) => {
+let useItem = (itemName: string) => {
   const item = getItemInInventory(itemName) || getItemInRoom(itemName, disk.roomId);
 
   if (!item) {
@@ -712,19 +713,19 @@ let commands = [
   // two+ arguments (e.g. "look at key", "talk to mary")
   {
     look: lookAt,
-    say(args) {
+    say(args: string[]) {
       const str = args.reduce((cur, acc) => cur + ' ' + acc, '');
       sayString(str);
     },
-    talk: args => talkToOrAboutX(args[0], args[1]),
-    x: args => lookAt([null, ...args]),
+    talk: (args: string[]) => talkToOrAboutX(args[0], args[1]),
+    x: (args: string[]) => lookAt([null, ...args]),
   },
 ];
 
 // process user input & update game state (bulk of the engine)
 // accepts optional string input; otherwise grabs it from the input element
-let applyInput = (input?) => {
-  let isNotSaveLoad = (cmd) => !cmd.toLowerCase().startsWith('save')
+let applyInput = (input?: string) => {
+  let isNotSaveLoad = (cmd: string) => !cmd.toLowerCase().startsWith('save')
     && !cmd.toLowerCase().startsWith('load')
     && !cmd.toLowerCase().startsWith('export')
     && !cmd.toLowerCase().startsWith('import');
@@ -738,7 +739,7 @@ let applyInput = (input?) => {
   const val = input.toLowerCase();
   setInput(''); // reset input field
 
-  const exec = (cmd, arg) => {
+  const exec = (cmd: (arg: string) => void, arg: string) => {
     if (cmd) {
       cmd(arg);
     } else if (disk.conversation) {
@@ -754,7 +755,7 @@ let applyInput = (input?) => {
   // (except for the say command, which prints back what the user said)
   // (and except for meta commands to allow save names such as 'a')
   if (values[0] !== 'say' && isNotSaveLoad(values[0])) {
-    values = values.filter(arg => arg !== 'a' && arg !== 'an' && arg != 'the');
+    values = values.filter((arg: string) => arg !== 'a' && arg !== 'an' && arg != 'the');
   }
 
   const [command, ...args] = values;
@@ -784,7 +785,7 @@ let applyInput = (input?) => {
 
 // allows wrapping text in special characters so println can convert them to HTML tags
 // string, string, string -> string
-let addStyleTags = (str, char, tagName) => {
+let addStyleTags = (str: string, char: string, tagName: string) => {
   let odd = true;
   while (str.includes(char)) {
     const tag = odd ? `<${tagName}>` : `</${tagName}>`;
@@ -797,7 +798,7 @@ let addStyleTags = (str, char, tagName) => {
 
 // overwrite user input
 // string -> nothing
-let setInput = (str) => {
+let setInput = (str: string) => {
   input.value = str;
   // on the next frame, move the cursor to the end of the line
   setTimeout(() => {
@@ -892,11 +893,11 @@ let autocomplete = () => {
       to: characterNames,
       at: characterNames.concat(itemNames),
     };
-    options = (optionMap[words[1]] || []).flat().map(string => string.toLowerCase());
+    options = (optionMap[words[1]] || []).flat().map((string: string) => string.toLowerCase());
   }
 
   const stubRegex = new RegExp(`^${stub}`);
-  const matches = (options || []).flat().filter(option => option.match(stubRegex));
+  const matches = (options || []).flat().filter((option: string) => option.match(stubRegex));
 
   if (!matches.length) {
     return;
@@ -994,8 +995,8 @@ let enterRoom = (id: string) => {
 
 // determine whether the object has the passed name
 // item | character, string -> bool
-let objectHasName = (obj, name: string) => {
-  const compareNames = n => n.toLowerCase().includes(name.toLowerCase());
+let objectHasName = (obj: Item, name: string) => {
+  const compareNames = (n: string) => n.toLowerCase().includes(name.toLowerCase());
 
   return Array.isArray(obj.name)
     ? obj.name.find(compareNames)
