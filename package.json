@@ -1,11 +1,12 @@
 {
   "name": "text-engine-ts",
   "version": "1.0.0",
-  "description": "Typescript migration of 'text-engine' by okaybenji",
+  "description": "TypeScript migration of 'text-engine' by okaybenji",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsc",
+    "dev": "tsc -w"
   },
   "repository": {
     "type": "git",
