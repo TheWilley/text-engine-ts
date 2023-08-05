@@ -9,9 +9,9 @@ type Item = {
     name: string | string[];
     desc?: string;
     isTakeable?: boolean;
-    onUse?: () => void;
-    onLook?: () => void;
-    onTake?: () => void;
+    onUse?: ({}?) => void;
+    onLook?: ({}) => void;
+    onTake?: ({}) => void;
 }
 
 type Character = {
@@ -19,8 +19,8 @@ type Character = {
     roomId: string;
     desc?: string;
     topics?: string | string[];
-    onTalk?: () => void;
-    onLook?: () => void;
+    onTalk?: ({}?) => void;
+    onLook?: ({}?) => void;
 }
 
 type Topic = {
@@ -46,7 +46,7 @@ type Room = {
     img?: string;
     items?: Item[];
     onEnter?: ({}?) => void;
-    onLook?: () => void;
+    onLook?: ({}?) => void;
 }
 
 type GameDisk = {

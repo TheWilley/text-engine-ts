@@ -10,7 +10,7 @@ let inputsPos = 0;
 let bullet = '•';
 
 // queue output for improved performance
-let printQueue: string[] = [];
+let printQueue: Node[] = [];
 
 // reference to the input element
 let input = document.querySelector('#input') as HTMLInputElement;
@@ -130,7 +130,7 @@ let importSave = () => {
   const input = openFile();
   input.onchange = () => {
     const fr = new FileReader();
-    const file = input.files[0];
+    const file = input.files![0];
 
     // register file loaded callback
     fr.onload = () => {
@@ -138,7 +138,7 @@ let importSave = () => {
       inputs = [];
       inputsPos = 0;
       loadDisk();
-      applyInputs(fr.result);
+      applyInputs(String(fr.result));
       println(`Game "${file.name}" was loaded.`);
       input.remove();
     };
@@ -215,20 +215,21 @@ let inv = () => {
 let look = () => {
   const room = getRoom(disk.roomId);
 
+  if(!room) return;
   if (typeof room.onLook === 'function') {
     room.onLook({ disk, println });
   }
 
-  println(room.desc)
+  println(room.desc);
 };
 
 // look in the passed way
 // string -> nothing
-let lookThusly = (str) => println(`You look ${str}.`);
+let lookThusly = (str: string) => println(`You look ${str}.`);
 
 // look at the passed item or character
 // array -> nothing
-let lookAt = (args) => {
+let lookAt = (args: [null, string]) => {
   const [_, name] = args;
   const item = getItemInInventory(name) || getItemInRoom(name, disk.roomId);
 
@@ -647,7 +648,7 @@ let say = () => println([`Say what?`, `You don't say.`]);
 
 // say the passed string
 // string -> nothing
-let sayString = (str) => println(`You say ${removePunctuation(str)}.`);
+let sayString = (str: string) => println(`You say ${removePunctuation(str)}.`);
 
 // retrieve user input (remove whitespace at beginning or end)
 // nothing -> string
@@ -700,11 +701,11 @@ let commands = [
     get: takeItem,
     use: useItem,
     say: sayString,
-    save: x => save(x),
-    load: x => load(x),
-    restore: x => load(x),
-    x: x => lookAt([null, x]), // IF standard shortcut for look at
-    t: x => talkToOrAboutX('to', x), // IF standard shortcut for talk
+    save: (x: string) => save(x),
+    load: (x: string) => load(x),
+    restore: (x: string) => load(x),
+    x: (x: string) => lookAt([null, x]), // IF standard shortcut for look at
+    t: (x: string) => talkToOrAboutX('to', x), // IF standard shortcut for talk
     export: exportSave,
     import: importSave, // (ignores the argument)
   },
@@ -804,9 +805,11 @@ let setInput = (str) => {
   });
 };
 
+type Line = string | string[] | (() => string);
+
 // render output, with optional class
 // (string | array | fn -> string) -> nothing
-let println = (line?, className?) => {
+let println = (line?: Line, className?: string) => {
   // bail if string is null or undefined
   if (!line) {
     return;
@@ -827,7 +830,7 @@ let println = (line?, className?) => {
   }
 
   // add a class for styling prior user input
-  if (line[0] === '>') {
+  if (Array.isArray(line) && line[0] === '>') {
     newLine.classList.add('user');
   }
 
@@ -942,7 +945,7 @@ let pickOne = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 
 // return the first name if it's an array, or the only name
 // string | array -> string
-let getName = (name: string) => typeof name === 'object' ? name[0] : name;
+let getName = (name: string | string[]) => typeof name === 'object' ? name[0] : name;
 
 // retrieve room by its ID
 // string -> room
@@ -1098,7 +1101,10 @@ let loadDisk = (uninitializedDisk?: GameDiskFactory) => {
 let printText = () => {
   if (printQueue.length) {
     while (printQueue.length) {
-      output.appendChild(printQueue.shift());
+      const node = printQueue.shift();
+      if (node) {
+        output.appendChild(node);
+      }
     }
 
     // scroll to the most recent output at the bottom of the page
@@ -1107,6 +1113,7 @@ let printText = () => {
 
   requestAnimationFrame(printText);
 }
+
 
 requestAnimationFrame(printText);
 
