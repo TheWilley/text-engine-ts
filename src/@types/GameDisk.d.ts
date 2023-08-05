@@ -45,11 +45,18 @@ type Room = {
     }[];
     img?: string;
     items?: Item[];
-    onEnter?: () => void;
+    onEnter?: ({}?) => void;
     onLook?: () => void;
 }
 
-type GameDisk = () => {
+type GameDisk = {
+    roomId: string;
+    rooms: Room[];
+    inventory?: Item[];
+    characters?: Character[]
+}
+
+type GameDiskFactory = () => {
     roomId: string;
     rooms: Room[];
     inventory?: Item[];

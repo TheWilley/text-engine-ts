@@ -1,16 +1,16 @@
 // global properties, assigned with let for easy overriding by the user
-let diskFactory;
-let disk;
+let diskFactory: GameDiskFactory;
+let disk: GameDisk;
 
 // store user input history
-let inputs = [];
+let inputs: string[] = [];
 let inputsPos = 0;
 
 // define list style
 let bullet = '•';
 
 // queue output for improved performance
-let printQueue = [];
+let printQueue: string[] = [];
 
 // reference to the input element
 let input = document.querySelector('#input') as HTMLInputElement;
@@ -20,7 +20,7 @@ let output = document.querySelector('#output') as HTMLDivElement;
 
 // add any default values to the disk
 // disk -> disk
-let init = (disk) => {
+let init = (disk: GameDisk) => {
   const initializedDisk = Object.assign({}, disk);
   initializedDisk.rooms = disk.rooms.map((room) => {
     // number of times a room has been visited
@@ -113,7 +113,7 @@ let load = (name = 'save') => {
 };
 
 // export current game to disk (optionally accepts a filename)
-let exportSave = (name) => {
+let exportSave = (name: string) => {
   const filename = `${name.length ? name : 'text-engine-save'}.txt`;
   saveFile(JSON.stringify(inputs), filename);
   println(`Game exported to "${filename}".`);
@@ -157,7 +157,7 @@ let importSave = () => {
 };
 
 // saves text from memory to disk
-let saveFile = (content, filename) => {
+let saveFile = (content: string, filename: string) => {
   const a = document.createElement('a');
   const file = new Blob([content], { type: 'text/plain' });
 
@@ -178,7 +178,7 @@ let openFile = () => {
 };
 
 // applies string representing an array of input strings (used for loading saved games)
-let applyInputs = (string) => {
+let applyInputs = (string: string) => {
   let ins = [];
 
   try {
@@ -900,7 +900,7 @@ let autocomplete = () => {
   }
 
   if (matches.length > 1) {
-    const longestCommonStartingSubstring = (arr1) => {
+    const longestCommonStartingSubstring = (arr1: string[]) => {
       const arr = arr1.concat().sort();
       const a1 = arr[0];
       const a2 = arr[arr.length - 1];
@@ -920,7 +920,7 @@ let autocomplete = () => {
 
 // select previously entered commands
 // string -> nothing
-let navigateHistory = (dir) => {
+let navigateHistory = (dir: string) => {
   if (dir === 'prev') {
     inputsPos--;
     if (inputsPos < 0) {
@@ -938,27 +938,27 @@ let navigateHistory = (dir) => {
 
 // get random array element
 // array -> any
-let pickOne = arr => arr[Math.floor(Math.random() * arr.length)];
+let pickOne = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 
 // return the first name if it's an array, or the only name
 // string | array -> string
-let getName = name => typeof name === 'object' ? name[0] : name;
+let getName = (name: string) => typeof name === 'object' ? name[0] : name;
 
 // retrieve room by its ID
 // string -> room
-let getRoom = (id) => disk.rooms.find(room => room.id === id);
+let getRoom = (id: string) => disk.rooms.find(room => room.id === id);
 
 // remove punctuation marks from a string
 // string -> string
-let removePunctuation = str => str.replace(/[.,\/#?!$%\^&\*;:{}=\_`~()]/g, "");
+let removePunctuation = (str: string) => str.replace(/[.,\/#?!$%\^&\*;:{}=\_`~()]/g, "");
 
 // remove extra whitespace from a string
 // string -> string
-let removeExtraSpaces = str => str.replace(/\s{2,}/g, " ");
+let removeExtraSpaces = (str: string) => str.replace(/\s{2,}/g, " ");
 
 // move the player into room with passed ID
 // string -> nothing
-let enterRoom = (id) => {
+let enterRoom = (id: string) => {
   const room = getRoom(id);
 
   if (!room) {
@@ -991,7 +991,7 @@ let enterRoom = (id) => {
 
 // determine whether the object has the passed name
 // item | character, string -> bool
-let objectHasName = (obj, name) => {
+let objectHasName = (obj, name: string) => {
   const compareNames = n => n.toLowerCase().includes(name.toLowerCase());
 
   return Array.isArray(obj.name)
@@ -1001,15 +1001,15 @@ let objectHasName = (obj, name) => {
 
 // get a list of all characters in the passed room
 // string -> characters
-let getCharactersInRoom = (roomId) => disk.characters.filter(c => c.roomId === roomId);
+let getCharactersInRoom = (roomId: string) => disk.characters.filter(c => c.roomId === roomId);
 
 // get a character by name from a list of characters
 // string, characters -> character
-let getCharacter = (name, chars = disk.characters) => chars.find(char => objectHasName(char, name));
+let getCharacter = (name: string, chars = disk.characters) => chars.find(char => objectHasName(char, name));
 
 // get item by name from room with ID
 // string, string -> item
-let getItemInRoom = (itemName, roomId) => {
+let getItemInRoom = (itemName: string, roomId: string) => {
   const room = getRoom(roomId);
 
   return room.items && room.items.find(item => objectHasName(item, itemName))
@@ -1017,15 +1017,15 @@ let getItemInRoom = (itemName, roomId) => {
 
 // get item by name from inventory
 // string -> item
-let getItemInInventory = (name) => disk.inventory.find(item => objectHasName(item, name));
+let getItemInInventory = (name: string) => disk.inventory.find(item => objectHasName(item, name));
 
 // get item by name
 // string -> item
-let getItem = (name) => getItemInInventory(name) || getItemInRoom(name, disk.roomId)
+let getItem = (name: string) => getItemInInventory(name) || getItemInRoom(name, disk.roomId)
 
 // retrieves a keyword from a topic
 // topic -> string
-let getKeywordFromTopic = (topic) => {
+let getKeywordFromTopic = (topic: Topic) => {
   if (topic.keyword) {
     return topic.keyword;
   }
@@ -1044,7 +1044,7 @@ let getKeywordFromTopic = (topic) => {
 
 // determine whether the passed conversation includes a topic with the passed keyword
 // conversation, string -> boolean
-let conversationIncludesTopic = (conversation, keyword) => {
+let conversationIncludesTopic = (conversation: unknown, keyword: string) => {
   // NOTHING is always an option
   if (keyword === 'nothing') {
     return true;
@@ -1059,7 +1059,7 @@ let conversationIncludesTopic = (conversation, keyword) => {
 
 // determine whether the passed topic is available for discussion
 // character, topic -> boolean
-let topicIsAvailable = (character, topic) => {
+let topicIsAvailable = (character: Character, topic: Topic) => {
   // topic has no prerequisites, or its prerequisites have been met
   const prereqsOk = !topic.prereqs || topic.prereqs.every(keyword => character.chatLog.includes(keyword));
   // topic is not removed after read, or it hasn't been read yet
@@ -1076,7 +1076,7 @@ let endConversation = () => {
 
 // load the passed disk and start the game
 // disk -> nothing
-let loadDisk = (uninitializedDisk?) => {
+let loadDisk = (uninitializedDisk?: GameDiskFactory) => {
   if (uninitializedDisk) {
     diskFactory = uninitializedDisk;
     // start listening for user input
