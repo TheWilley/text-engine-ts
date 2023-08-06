@@ -11,12 +11,12 @@ type Item = {
     name: string | string[];
     desc?: string;
     isTakeable?: boolean;
-    onUse?: ({ }?) => void;
-    onLook?: ({ }?) => void;
-    onTake?: ({ }?) => void;
-    isHidden?: boolean
-    block?: string
-    use?: string
+    onUse?: (args: unknown) => void;
+    onLook?: (args: unknown) => void;
+    onTake?: (args: unknown) => void;
+    isHidden?: boolean;
+    block?: string;
+    use?: (args: unknown) => void;
 }
 
 type Character = {
@@ -24,22 +24,20 @@ type Character = {
     roomId: string;
     desc?: string;
     topics?: string | string[];
-    onTalk?: ({ }?) => void;
-    onLook?: ({ }?) => void;
+    onTalk?: (args: unknown) => void;
+    onLook?: (args: unknown) => void;
     chatLog?: string[];
-    isHidden?: boolean
+    isHidden?: boolean;
 }
 
 type Topic = {
     option: string;
     removeOnRead?: boolean;
     prereqs?: string[];
-    keyword?: string
-} & (
-        { line: string; onSelected?: never } |
-        { line?: never; onSelected: () => void } |
-        { line: string; onSelected: () => void }
-    );
+    keyword?: string;
+    line: string;
+    onSelected: (args: unknown) => void;
+}
 
 type Room = {
     visits: number;
@@ -47,15 +45,15 @@ type Room = {
     name: string;
     desc: string;
     exits: {
-        dir: string
-        id: string
-        block?: string
-        isHidden?: boolean
+        dir: string;
+        id: string;
+        block?: string;
+        isHidden?: boolean;
     }[];
     img?: string;
     items?: Item[];
-    onEnter?: ({ }?) => void;
-    onLook?: ({ }?) => void;
+    onEnter?: (args: unknown) => void;
+    onLook?: (args: unknown) => void;
 }
 
 interface GameDiskObject {
@@ -63,8 +61,8 @@ interface GameDiskObject {
     rooms: Room[];
     inventory?: Item[];
     characters?: Character[];
-    conversation?: Topic[];
-    conversant?: Character;
+    conversation?: Topic[] | undefined;
+    conversant?: Character | undefined;
 }
 
 interface GameDiskFactory {

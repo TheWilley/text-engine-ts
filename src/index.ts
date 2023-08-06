@@ -1,4 +1,7 @@
 /* eslint-disable no-useless-escape */
+// Seeing as the code worked before, it's worth checking what would be undefined or null and what we can set ! to define it as not null/undefined.
+// Alternatively, we handle all these cases, but risk breaking something
+// I'll try to handle type safety before meddeling with that.
 
 // global properties, assigned with let for easy overriding by the user
 let diskFactory: GameDiskObject | GameDiskFactory;
@@ -91,7 +94,7 @@ const save = (name = 'save') => {
 // reapply inputs from saved game
 // (optionally accepts a name for the save)
 const load = (name = 'save') => {
-  const save = localStorage.m(name);
+  const save = localStorage.getItem(name);
 
   if (!save) {
     println('Save file not found.');
@@ -231,6 +234,7 @@ const lookThusly = (str: string) => println(`You look ${str}.`);
 // look at the passed item or character
 // array -> nothing
 const lookAt = (args: [null, ...string[]]) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, name] = args;
   const item = getItemInInventory(name) || getItemInRoom(name, disk.roomId);
 
@@ -402,7 +406,7 @@ const talkToOrAboutX = (preposition: string, x: string) => {
       } else {
         // if character isn't handling onTalk, let the player know they are out of topics
         if (!character?.onTalk) {
-          println(`You have nothing to discuss with ${getName(character?.name)} at this time.`);
+          println(`You have nothing to discuss with ${getName(character?.name as string)} at this time.`);
         }
         endConversation();
       }
@@ -425,7 +429,7 @@ const talkToOrAboutX = (preposition: string, x: string) => {
       return;
     }
 
-    // If character does not exist, bail out.
+    // If character does not exist, bail out
     if (!character) return;
 
     if (!character.topics) {
@@ -460,9 +464,9 @@ const talkToOrAboutX = (preposition: string, x: string) => {
       println('You need to be in a conversation to talk about something.');
       return;
     }
-    const character = eval(disk.conversant);
+    const character = eval(String(disk.conversant));
     if (getCharactersInRoom(room?.id)?.includes(disk.conversant)) {
-      const response = x.toLowerCase();
+      const response = x?.toLowerCase();
       if (response === 'nothing') {
         endConversation();
         println('You end the conversation.');
@@ -471,7 +475,7 @@ const talkToOrAboutX = (preposition: string, x: string) => {
       } else {
         const topic = disk.conversation?.length && conversationIncludesTopic(disk.conversation, response);
         const isAvailable = topic && topicIsAvailable(character, topic);
-        if (isAvailable) {
+        if (isAvailable && typeof topic !== 'boolean') {
           if (topic.line) {
             println(topic.line);
           }
@@ -523,21 +527,23 @@ const takeItem = (itemName: string) => {
   let itemIndex = room?.items && room.items.findIndex(findItem);
 
   if (typeof itemIndex === 'number' && itemIndex > -1) {
-    const item = room.items[itemIndex];
-    if (item.isTakeable) {
-      disk.inventory?.push(item);
-      room.items.splice(itemIndex, 1);
+    if (room && room.items) {
+      const item = room.items[itemIndex];
+      if (item.isTakeable) {
+        disk.inventory?.push(item);
+        room.items.splice(itemIndex, 1);
 
-      if (typeof item.onTake === 'function') {
-        item.onTake({ disk, println, room, getRoom, enterRoom, item });
+        if (typeof item.onTake === 'function') {
+          item.onTake({ disk, println, room, getRoom, enterRoom, item });
+        } else {
+          println(`You took the ${getName(item.name)}.`);
+        }
       } else {
-        println(`You took the ${getName(item.name)}.`);
-      }
-    } else {
-      if (typeof item.onTake === 'function') {
-        item.onTake({ disk, println, room, getRoom, enterRoom, item });
-      } else {
-        println(item.block || 'You can\'t take that.');
+        if (typeof item.onTake === 'function') {
+          item.onTake({ disk, println, room, getRoom, enterRoom, item });
+        } else {
+          println(item.block || 'You can\'t take that.');
+        }
       }
     }
   } else {
@@ -554,8 +560,8 @@ const takeItem = (itemName: string) => {
 const use = () => {
   const room = getRoom(disk.roomId);
 
-  const useableItems = (room.items || [])
-    .concat(disk.inventory)
+  const useableItems = (room?.items || [])
+    .concat(disk.inventory ?? [])
     .filter(item => item.onUse && !item.isHidden);
 
   if (!useableItems.length) {
@@ -617,9 +623,9 @@ const items = () => {
 // list characters in room
 const chars = () => {
   const room = getRoom(disk.roomId);
-  const chars = getCharactersInRoom(room.id).filter(char => !char.isHidden);
+  const chars = getCharactersInRoom(room?.id)?.filter(char => !char.isHidden);
 
-  if (!chars.length) {
+  if (!chars?.length) {
     println('There\'s no one here.');
     return;
   }
@@ -862,7 +868,7 @@ const autocomplete = () => {
   const room = getRoom(disk.roomId);
   const words = input.value.toLowerCase().trim().split(/\s+/);
   const wordsSansStub = words.slice(0, words.length - 1);
-  const itemNames = (room?.items || []).concat(disk.inventory).map(item => item.name);
+  const itemNames = (room?.items || []).concat(disk.inventory || []).map(item => item.name);
 
   const stub = words[words.length - 1];
   let options;
@@ -871,13 +877,13 @@ const autocomplete = () => {
     // get the list of options from the commands array
     // (exclude one-character commands from auto-completion)
     const allCommands = commands
-      .reduce((acc, cur) => acc.concat(Object.keys(cur)), [])
+      .reduce((acc: string[], cur) => acc.concat(Object.keys(cur)), [])
       .filter(cmd => cmd.length > 1);
 
     options = [...new Set(allCommands)];
     if (disk.conversation) {
       options = Array.isArray(disk.conversation)
-        ? options.concat(disk.conversation.map(getKeywordFromTopic))
+        ? options.concat(disk.conversation.map(getKeywordFromTopic) as string[])
         : Object.keys(disk.conversation);
       options.push('nothing');
     }
@@ -889,14 +895,14 @@ const autocomplete = () => {
       go: (room?.exits || []).map(exit => exit.dir),
       look: ['at'],
     };
-    options = optionMap[words[0]];
+    options = optionMap[words[0] as keyof typeof optionMap];
   } else if (words.length === 3) {
     const characterNames = (getCharactersInRoom(room?.id) || []).map(character => character.name);
     const optionMap = {
       to: characterNames,
       at: characterNames.concat(itemNames),
     };
-    options = (optionMap[words[1]] || []).flat().map((string: string) => string.toLowerCase());
+    options = (optionMap[words[1] as keyof typeof optionMap] || []).flat().map((string: string) => string.toLowerCase());
   }
 
   const stubRegex = new RegExp(`^${stub}`);
@@ -949,7 +955,7 @@ const pickOne = (arr: string[]) => arr[Math.floor(Math.random() * arr.length)];
 
 // return the first name if it's an array, or the only name
 // string | array -> string
-const getName = (name: string | string[] | undefined) => typeof name === 'object' ? name[0] : name;
+const getName = (name: string | string[]) => typeof name === 'object' ? name[0] : name;
 
 // retrieve room by its ID
 // string -> room
@@ -1046,14 +1052,14 @@ const getKeywordFromTopic = (topic: Topic) => {
     // find the word that is in uppercase
     // (must be at least 2 characters long)
     .find(w => w.length > 1 && w.toUpperCase() === w)
-    .toLowerCase();
+    ?.toLowerCase();
 
   return keyword;
 };
 
 // determine whether the passed conversation includes a topic with the passed keyword
 // conversation, string -> boolean
-const conversationIncludesTopic = (conversation: unknown, keyword: string) => {
+const conversationIncludesTopic = (conversation: Topic[], keyword: string) => {
   // NOTHING is always an option
   if (keyword === 'nothing') {
     return true;
@@ -1068,11 +1074,11 @@ const conversationIncludesTopic = (conversation: unknown, keyword: string) => {
 
 // determine whether the passed topic is available for discussion
 // character, topic -> boolean
-const topicIsAvailable = (character: Character | undefined, topic: Topic) => {
+const topicIsAvailable = (character: Character | undefined, topic: Topic | boolean) => {
   // topic has no prerequisites, or its prerequisites have been met
-  const prereqsOk = !topic.prereqs || topic.prereqs.every(keyword => character?.chatLog?.includes(keyword));
+  const prereqsOk = typeof topic == 'boolean' || !topic.prereqs || topic.prereqs.every(keyword => character?.chatLog?.includes(keyword));
   // topic is not removed after read, or it hasn't been read yet
-  const readOk = !topic.removeOnRead || !character?.chatLog?.includes(getKeywordFromTopic(topic));
+  const readOk = typeof topic == 'boolean' || !topic.removeOnRead || !character?.chatLog?.includes(getKeywordFromTopic(topic) ?? '');
 
   return prereqsOk && readOk;
 };
