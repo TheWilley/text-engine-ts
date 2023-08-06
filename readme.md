@@ -18,7 +18,7 @@
               ██    ████████
 ```
 
-A fork of the HTML-based text adventure game engine "[text-engine](https://github.com/okaybenji/text-engine)" by okaybenji, with the aim to migrate the project to [TypeScript](https://www.typescriptlang.org/).
+A fork of the HTML-based text adventure game engine "[text-engine](https://github.com/okaybenji/text-engine)", originally created by okaybenji, with the aim to migrate the project to [TypeScript](https://www.typescriptlang.org/).
 
 ### Motivation and Goal
 Simply put, I prefer TypeScript over JavaScript. The primary vision is to migrate text-engine so that users have easy access to documentation trough [TSdoc](https://tsdoc.org/), i.e, within their IDE. 
