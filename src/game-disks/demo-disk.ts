@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 const demoDisk: GameDiskFactory = () => ({
   roomId: 'foyer', // the ID of the room the player starts in
   rooms: [

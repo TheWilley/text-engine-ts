@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 // This simple game disk can be used as a starting point to create a new adventure.
 // Change anything you want, add new rooms, etc.
 const newDiskTemplate: GameDiskFactory = () => ({

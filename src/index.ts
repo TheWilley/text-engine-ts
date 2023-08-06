@@ -49,7 +49,8 @@ const init = (disk) => {
 };
 
 // register listeners for input events
-const setup = () => {
+// eslint-disable-next-line prefer-const
+let setup = () => {
   input.addEventListener('keypress', (e: KeyboardEvent) => {
     const ENTER = 13;
 
@@ -83,7 +84,8 @@ const setup = () => {
 
 // store player input history
 // (optionally accepts a name for the save)
-const save = (name = 'save') => {
+// eslint-disable-next-line prefer-const
+let save = (name = 'save') => {
   localStorage.setItem(name, JSON.stringify(inputs));
   const line = name.length ? `Game saved as "${name}".` : 'Game saved.';
   println(line);
@@ -91,7 +93,8 @@ const save = (name = 'save') => {
 
 // reapply inputs from saved game
 // (optionally accepts a name for the save)
-const load = (name = 'save') => {
+// eslint-disable-next-line prefer-const
+let load = (name = 'save') => {
   const save = localStorage.getItem(name);
 
   if (!save) {
@@ -116,14 +119,16 @@ const load = (name = 'save') => {
 };
 
 // export current game to disk (optionally accepts a filename)
-const exportSave = (name) => {
+// eslint-disable-next-line prefer-const
+let exportSave = (name) => {
   const filename = `${name.length ? name : 'text-engine-save'}.txt`;
   saveFile(JSON.stringify(inputs), filename);
   println(`Game exported to "${filename}".`);
 };
 
 // import a previously exported game from disk
-const importSave = () => {
+// eslint-disable-next-line prefer-const
+let importSave = () => {
   // if the disk provided is an object rather than a factory function, the game state must be reset by reloading
   if (typeof diskFactory !== 'function' && inputs.length) {
     println('You cannot load this disk in the middle of the game. Please reload the browser, then run the **LOAD** command again.');
@@ -160,7 +165,8 @@ const importSave = () => {
 };
 
 // saves text from memory to disk
-const saveFile = (content, filename) => {
+// eslint-disable-next-line prefer-const
+let saveFile = (content, filename) => {
   const a = document.createElement('a');
   const file = new Blob([content], { type: 'text/plain' });
 
@@ -172,7 +178,8 @@ const saveFile = (content, filename) => {
 };
 
 // creates input element to open file prompt (allows user to load exported game from disk)
-const openFile = () => {
+// eslint-disable-next-line prefer-const
+let openFile = () => {
   const input = document.createElement('input');
   input.setAttribute('type', 'file');
   input.click();
@@ -181,7 +188,8 @@ const openFile = () => {
 };
 
 // applies string representing an array of input strings (used for loading saved games)
-const applyInputs = (string) => {
+// eslint-disable-next-line prefer-const
+let applyInputs = (string) => {
   let ins = [];
 
   try {
@@ -200,7 +208,8 @@ const applyInputs = (string) => {
 };
 
 // list player inventory
-const inv = () => {
+// eslint-disable-next-line prefer-const
+let inv = () => {
   const items = disk.inventory.filter(item => !item.isHidden);
 
   if (!items.length) {
@@ -215,7 +224,8 @@ const inv = () => {
 };
 
 // show room description
-const look = () => {
+// eslint-disable-next-line prefer-const
+let look = () => {
   const room = getRoom(disk.roomId);
 
   if (typeof room.onLook === 'function') {
@@ -227,11 +237,13 @@ const look = () => {
 
 // look in the passed way
 // string -> nothing
-const lookThusly = (str) => println(`You look ${str}.`);
+// eslint-disable-next-line prefer-const
+let lookThusly = (str) => println(`You look ${str}.`);
 
 // look at the passed item or character
 // array -> nothing
-const lookAt = (args) => {
+// eslint-disable-next-line prefer-const
+let lookAt = (args) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, name] = args;
   const item = getItemInInventory(name) || getItemInRoom(name, disk.roomId);
@@ -266,8 +278,9 @@ const lookAt = (args) => {
   }
 };
 
-// list available exits
-const go = () => {
+// list available 
+// eslint-disable-next-line prefer-const
+let go = () => {
   const room = getRoom(disk.roomId);
   const exits = room.exits.filter(exit => !exit.isHidden);
 
@@ -296,7 +309,8 @@ const go = () => {
 
 // find the exit with the passed direction in the given list
 // string, array -> exit
-const getExit: GameFunctions['getExit'] = (dir, exits) => exits.find(exit =>
+// eslint-disable-next-line prefer-const
+let getExit: GetExit = (dir, exits) => exits.find(exit =>
   Array.isArray(exit.dir)
     ? exit.dir.includes(dir)
     : exit.dir === dir
@@ -304,7 +318,8 @@ const getExit: GameFunctions['getExit'] = (dir, exits) => exits.find(exit =>
 
 // shortcuts for cardinal directions
 // (allows player to type e.g. 'go n')
-const shortcuts = {
+// eslint-disable-next-line prefer-const
+let shortcuts = {
   n: 'north',
   s: 'south',
   e: 'east',
@@ -317,7 +332,8 @@ const shortcuts = {
 
 // go the passed direction
 // string -> nothing
-const goDir = (dir) => {
+// eslint-disable-next-line prefer-const
+let goDir = (dir) => {
   const room = getRoom(disk.roomId);
   const exits = room.exits;
 
@@ -346,20 +362,25 @@ const goDir = (dir) => {
   enterRoom(nextRoom.id);
 };
 
+// TODO: Check which ones should be lets or consts
+
 // shortcuts for cardinal directions
 // (allows player to type just e.g. 'n')
-const n = () => goDir('north');
-const s = () => goDir('south');
-const e = () => goDir('east');
-const w = () => goDir('west');
-const ne = () => goDir('northeast');
-const se = () => goDir('southeast');
-const nw = () => goDir('northwest');
-const sw = () => goDir('southwest');
+/* eslint-disable prefer-const */
+let n = () => goDir('north');
+let s = () => goDir('south');
+let e = () => goDir('east');
+let w = () => goDir('west');
+let ne = () => goDir('northeast');
+let se = () => goDir('southeast');
+let nw = () => goDir('northwest');
+let sw = () => goDir('southwest');
+/* eslint-enable prefer-const */
 
 // if there is one character in the room, engage that character in conversation
 // otherwise, list characters in the room
-const talk = () => {
+// eslint-disable-next-line prefer-const
+let talk = () => {
   const characters = getCharactersInRoom(disk.roomId);
 
   // assume players wants to talk to the only character in the room
@@ -375,7 +396,8 @@ const talk = () => {
 
 // speak to someone or about some topic
 // string, string -> nothing
-const talkToOrAboutX = (preposition, x) => {
+// eslint-disable-next-line prefer-const
+let talkToOrAboutX = (preposition, x) => {
   const room = getRoom(disk.roomId);
 
   if (preposition !== 'to' && preposition !== 'about') {
@@ -501,7 +523,8 @@ const talkToOrAboutX = (preposition, x) => {
 };
 
 // list takeable items in room
-const take = () => {
+// eslint-disable-next-line prefer-const
+let take = () => {
   const room = getRoom(disk.roomId);
   const items = (room.items || []).filter(item => item.isTakeable && !item.isHidden);
 
@@ -516,7 +539,8 @@ const take = () => {
 
 // take the item with the given name
 // string -> nothing
-const takeItem = (itemName) => {
+// eslint-disable-next-line prefer-const
+let takeItem = (itemName) => {
   const room = getRoom(disk.roomId);
   const findItem = item => objectHasName(item, itemName);
   let itemIndex = room.items && room.items.findIndex(findItem);
@@ -550,7 +574,8 @@ const takeItem = (itemName) => {
 };
 
 // list useable items in room and inventory
-const use = () => {
+// eslint-disable-next-line prefer-const
+let use = () => {
   const room = getRoom(disk.roomId);
 
   const useableItems = (room.items || [])
@@ -570,7 +595,8 @@ const use = () => {
 
 // use the item with the given name
 // string -> nothing
-const useItem = (itemName) => {
+// eslint-disable-next-line prefer-const
+let useItem = (itemName) => {
   const item = getItemInInventory(itemName) || getItemInRoom(itemName, disk.roomId);
 
   if (!item) {
@@ -599,7 +625,8 @@ const useItem = (itemName) => {
 };
 
 // list items in room
-const items = () => {
+// eslint-disable-next-line prefer-const
+let items = () => {
   const room = getRoom(disk.roomId);
   const items = (room.items || []).filter(item => !item.isHidden);
 
@@ -614,7 +641,8 @@ const items = () => {
 };
 
 // list characters in room
-const chars = () => {
+// eslint-disable-next-line prefer-const
+let chars = () => {
   const room = getRoom(disk.roomId);
   const chars = getCharactersInRoom(room.id).filter(char => !char.isHidden);
 
@@ -648,11 +676,13 @@ let help = () => {
 };
 
 // handle say command with no args
-const say = () => println(['Say what?', 'You don\'t say.']);
+// eslint-disable-next-line prefer-const
+let say = () => println(['Say what?', 'You don\'t say.']);
 
 // say the passed string
 // string -> nothing
-const sayString = (str) => println(`You say ${removePunctuation(str)}.`);
+// eslint-disable-next-line prefer-const
+let sayString = (str) => println(`You say ${removePunctuation(str)}.`);
 
 // retrieve user input (remove whitespace at beginning or end)
 // nothing -> string
@@ -664,7 +694,8 @@ const getInput = () => input.value.trim();
 // the methods should be named after the command (the first argument, e.g. "help" or "go")
 // any command accepting multiple parameters should take in a single array of parameters
 // if the user has entered more arguments than the highest number you've defined here, we'll use the last set
-const commands = [
+// eslint-disable-next-line prefer-const
+let commands = [
   // no arguments (e.g. "help", "chars", "inv")
   {
     inv,
@@ -811,7 +842,7 @@ const setInput = (str) => {
 
 // render output, with optional class
 // (string | array | fn -> string) -> nothing
-const println: GameFunctions['println'] = (line?, className?) => {
+const println: Println = (line?, className?) => {
   // bail if string is null or undefined
   if (!line) {
     return;
@@ -943,7 +974,7 @@ const navigateHistory = (dir) => {
 
 // get random array element
 // array -> any
-const pickOne: GameFunctions['pickOne'] = arr => arr[Math.floor(Math.random() * arr.length)];
+const pickOne: PickOne = arr => arr[Math.floor(Math.random() * arr.length)];
 
 // return the first name if it's an array, or the only name
 // string | array -> string
@@ -951,7 +982,7 @@ const getName = name => typeof name === 'object' ? name[0] : name;
 
 // retrieve room by its ID
 // string -> room
-const getRoom: GameFunctions['getRoom'] = (id) => disk.rooms.find(room => room.id === id);
+const getRoom: GetRoom = (id) => disk.rooms.find(room => room.id === id);
 
 // remove punctuation marks from a string
 // string -> string
@@ -963,7 +994,7 @@ const removeExtraSpaces = str => str.replace(/\s{2,}/g, ' ');
 
 // move the player into room with passed ID
 // string -> nothing
-const enterRoom: GameFunctions['enterRoom'] = (id) => {
+const enterRoom: EnterRoom = (id) => {
   const room = getRoom(id);
 
   if (!room) {
@@ -1006,15 +1037,15 @@ const objectHasName = (obj, name) => {
 
 // get a list of all characters in the passed room
 // string -> characters
-const getCharactersInRoom: GameFunctions['getCharactersInRoom'] = (roomId) => disk.characters.filter(c => c.roomId === roomId);
+const getCharactersInRoom: GetCharactersInRoom = (roomId) => disk.characters.filter(c => c.roomId === roomId);
 
 // get a character by name from a list of characters
 // string, characters -> character
-const getCharacter: GameFunctions['getCharacter'] = (name, chars = disk.characters) => chars.find(char => objectHasName(char, name));
+const getCharacter: GetCharacter = (name, chars = disk.characters) => chars.find(char => objectHasName(char, name));
 
 // get item by name from room with ID
 // string, string -> item
-const getItemInRoom: GameFunctions['getItemInRoom'] = (itemName, roomId) => {
+const getItemInRoom: GetItemInRoom = (itemName, roomId) => {
   const room = getRoom(roomId);
 
   return room.items && room.items.find(item => objectHasName(item, itemName));
@@ -1022,12 +1053,12 @@ const getItemInRoom: GameFunctions['getItemInRoom'] = (itemName, roomId) => {
 
 // get item by name from inventory
 // string -> item
-const getItemInInventory: GameFunctions['getItemInInventory'] = (name) => disk.inventory.find(item => objectHasName(item, name));
+const getItemInInventory: GetItemInInventory = (name) => disk.inventory.find(item => objectHasName(item, name));
 
 // get item by name
 // string -> item
 // eslint-disable-next-line
-const getItem: GameFunctions['getItem'] = (name) => getItemInInventory(name) || getItemInRoom(name, disk.roomId);
+const getItem: GetItem = (name) => getItemInInventory(name) || getItemInRoom(name, disk.roomId);
 
 // retrieves a keyword from a topic
 // topic -> string

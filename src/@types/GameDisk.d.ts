@@ -3,85 +3,18 @@
 /*
 Global type defentions would be a bad idea here if this was a library, but per https://www.reddit.com/r/typescript/comments/126im5c/dts_files_on_a_ts_project/
 it would be fine here since this is more of an app
-
-Functions are not included since they are imported directly from index.ts
 */
 
+/**
+ * Defines types for avaible objects in callbacks.
+ */
 type CallbackObjects = {
     disk?: GameDiskObject,
-    println?: GameFunctions['println'],
+    println?: Println
     room?: Room,
-    getRoom?: GameFunctions['getRoom'],
-    enterRoom?: GameFunctions['enterRoom'],
+    getRoom?: GetRoom
+    enterRoom?: EnterRoom
     item?: Item
-}
-
-/**
- * Interface for the game's functions.
- */
-interface GameFunctions {
-    /**
-     * Print a line of text to the console. It takes up to two arguments:
-     * @param line The text to be printed.
-     * @param className *Optional*. The name of a CSS class to apply to the line. You can use this to style the text.
-     */
-    println: (line: string | string[] | (() => string), className?: string) => void;
-    /**
-     * Get a random item from an array. It takes one argument:
-     * @param arr The array with the items to pick from.
-     * @returns A random item from the array.
-     */
-    pickOne: <T>(arr: T[]) => T;
-    /**
-     * Get a reference to a room by its ID. It takes one argument:
-     * @param id The unique identifier for the room.
-     * @returns A reference to the room, or undefined if no room with that ID exists.
-     */
-    getRoom: (id: string) => Room | undefined;
-    /**
-     * Move the player to particular room. It takes one argument:
-     * @param id The unique identifier for the room.
-     */
-    enterRoom: (id: string) => void;
-    /**
-     * 
-     * @param dir  The name of the exit's dir (direction) property, e.g. "north".
-     * @param exits The list of exits to search. (Usually you would get a reference to a room and pass `room.exits`.)
-     * @returns A reference to the exit, or undefined if no exit with that dir exists.
-     */
-    getExit: (dir: string, exits: Exit[]) => Exit | undefined;
-    /**
-     * Get a reference to a character. It takes up to two arguments:
-     * @param name The character's name.
-     * @param chars *Optional*. The array of characters to search. Defaults to searching all characters on the disk.
-     * @returns A reference to the character, or undefined if no character with that name exists.
-     */
-    getCharacter: (name: string, chars?: Character[]) => Character | undefined;
-    /**
-     * Get an array containing references to each character in a particular room. It takes one argument:
-     * @param roomId The unique identifier for the room.
-     * @returns An array of references to the characters in the room.
-     */
-    getCharactersInRoom: (roomId: string) => Character[];
-    /**
-     * Get a reference to an item, first looking in inventory, then in the current room. It takes one argument:
-     * @param name The name of the item.
-     * @returns A reference to the item, or undefined if no item with that name exists.
-     */
-    getItem: (name: string) => Item | undefined;
-    /**
-     * Get a reference to an item in a particular room. It takes two arguments:
-     * @param itemName The name of the item.
-     * @param roomId The unique identifier for the room.
-     * @returns A reference to the item, or undefined if no item with that name exists in the room.
-     */
-    getItemInRoom: (itemName: string, roomId: string) => Item | undefined;
-    /**
-     * Get a reference to an item in the player's inventory. It takes one argument:
-     * @param name The name of the item.
-     * @returns A reference to the item, or undefined if no item with that name exists in the inventory.
-     */
-    getItemInInventory: (name: string) => Item | undefined;
 }
 
 /**
@@ -91,11 +24,11 @@ type Item = {
     /**
      * How the item is referred to by the game and the player. Using an array allows you to define multiple string names for the item. You might do this if you expect the player may call it by more than one name. For instance ['basketball', 'ball']. When listing items in a room, the engine will always use the first name in the list.
      */
-    name: string | string[];
+    name?: string | string[];
     /**
      * Description displayed when the player looks at the item. If multiple descriptions are provided, one will be chosen at random.
      */
-    desc?: string;
+    desc?: string | string[];
     /**
      * Whether the player can pick up this item (if it's in a room). Defaults to false.
      */
@@ -103,15 +36,15 @@ type Item = {
     /**
      * Function to be called when the player uses the item.
      */
-    onUse?: (args: CallbackObjects) => void;
+    onUse?: (args?: CallbackObjects) => void;
     /**
      * Function to be called when the player looks at the item.
      */
-    onLook?: (args: CallbackObjects) => void;
+    onLook?: (args?: CallbackObjects) => void;
     /**
      * Function to be called when the player takes the item.
      */
-    onTake?: (args: CallbackObjects) => void;
+    onTake?: (args?: CallbackObjects) => void;
     /**
      * *Developer-only property*.
      */
@@ -123,7 +56,10 @@ type Item = {
     /**
      * @deprecated Use `onUse` instead.
      */
-    use?: (args: CallbackObjects) => void;
+    use?: (args?: CallbackObjects) => void;
+    /**
+     * *Custom properties*.
+     */
     [key: string]: unknown;
 }
 
@@ -134,15 +70,15 @@ type Character = {
     /**
      * How the character is referred to by the game and the player. Using an array allows you to define multiple string names for the character. You might do this if you expect the player may call them by more than one name. For instance ['Steve', 'waiter', 'garçon']. When listing characters in a room, the engine will always use the first name in the list.
      */
-    name: string | string[];
+    name?: string | string[];
     /**
      * The ID of the room the character is currently in. The player can only talk to characters in the room with them.
      */
-    roomId: string;
+    roomId?: string;
     /**
      * Description. Text displayed when the player looks at the character. If multiple descriptions are provided, one will be chosen at random.
      */
-    desc?: string;
+    desc?: string | string[];
     /**
      * If a string is provided, it will be printed when the player talks to this character. Otherwise, this should be a list of topics for use in the conversation with the character.
      */
@@ -154,11 +90,19 @@ type Character = {
     /**
      * Function to be called when the player looks at the character.
      */
-    onLook?: (args: CallbackObjects) => void;
+    onLook?: (args?: CallbackObjects) => void;
+    /**
+     * Player's conversation history with this character.
+     */
+    chatLog?: string[];
     /**
      * *Developer-only property*.
      */
     isHidden?: boolean;
+    /**
+     * *Custom properties*.
+     */
+    [key: string]: unknown;
 }
 
 /**
@@ -168,7 +112,7 @@ type Topic = {
     /**
      * The choice presented to the player, with a KEYWORD the player can type to select it. If the keyword is written in uppercase, the engine can identify it automatically. (Otherwise, you'll need to specify the keyword in a separate property.) The option can be just the keyword itself, or any string containing the keyword.
      */
-    option: string;
+    option?: string;
     /**
      * The text to display when the user types the keyword to select the option.
      */
@@ -189,6 +133,10 @@ type Topic = {
      * The word the player must type to select this option. This property is only required if the option itself does not contain a keyword written in uppercase.
      */
     keyword?: string;
+    /**
+     * *Custom properties*.
+     */
+    [key: string]: unknown;
 }
 
 /**
@@ -198,11 +146,11 @@ type Exit = {
     /**
      * The direction the player must go to leave via this exit (e.g. "north", but can be anything)
      */
-    dir: string | string[];
+    dir?: string | string[];
     /**
      * The ID of the room this exit leads to.
      */
-    id: string;
+    id?: string;
     /**
      * Line to be printed if the player tries to use this exit. If this property exists, the player cannot use the exit.
      */
@@ -211,6 +159,10 @@ type Exit = {
      * *Developer-only property*.
      */
     isHidden?: boolean;
+    /**
+     * *Custom properties*.
+     */
+    [key: string]: unknown;
 }
 
 /**
@@ -218,17 +170,17 @@ type Exit = {
  */
 type Room = {
     /**
-     * The name of the room will be displayed each time it is entered.
-     */
-    name: string;
-    /**
      * Unique identifier for this room. Can be anything.
      */
-    id: string;
+    id?: string;
+    /**
+     * The name of the room will be displayed each time it is entered.
+     */
+    name?: string;
     /**
      * Description of the room, displayed when it is first entered, and also when the player issues the look command.
      */
-    desc: string;
+    desc?: string;
     /**
      * List of paths from this room.
      */
@@ -244,15 +196,19 @@ type Room = {
     /**
      * Function to be called when the player enters this room.
      */
-    onEnter?: (args: CallbackObjects) => void;
+    onEnter?: (args?: CallbackObjects) => void;
     /**
      * Function to be called when the player issues the look command in this room.
      */
-    onLook?: (args: CallbackObjects) => void;
+    onLook?: (args?: CallbackObjects) => void;
     /**
      * *Developer-only property*.
      */
     visits?: number;
+    /**
+     * *Custom properties*.
+     */
+    [key: string]: unknown;
 }
 
 /**
@@ -275,6 +231,10 @@ interface GameDiskObject {
      * List of characters in the game.
      */
     characters?: Character[];
+    /**
+     * *Custom properties*.
+     */
+    [key: string]: unknown;
 }
 
 interface GameDiskFactory {
