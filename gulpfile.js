@@ -37,8 +37,16 @@ gulp.task('copy-css', () => {
         .pipe(log({ message: 'CSS files copied!', showFiles: false }));
 });
 
+// Task to copy font files
+gulp.task('copy-fonts', () => {
+    logMessage('Copying font files...');
+    return gulp.src('src/fonts/*.*')
+        .pipe(gulp.dest('dist/fonts'))
+        .pipe(log({ message: 'Font files copied!', showFiles: false }));
+});
+
 // Define the build task that runs compile, copy-html, and copy-css tasks
-gulp.task('build', gulp.series('compile', 'copy-html', 'copy-css'));
+gulp.task('build', gulp.series('compile', 'copy-html', 'copy-css', 'copy-fonts'));
 
 // Default task
 gulp.task('default', gulp.series('build'));
