@@ -71,7 +71,8 @@ const demoDisk: GameDiskFactory = () => ({
                 const key = getItem('shiny');
 
                 // now that we know it's a key, place that name first so the engine calls it by that name
-                key.name.unshift('silver key');
+                if (typeof key.name !== 'string')
+                  key.name.unshift('silver key');
 
                 // let's also update the description
                 key.desc = 'It has a blue cap with the word "LAB" printed on it.';
