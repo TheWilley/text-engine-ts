@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
+    "build": "gulp build",
     "dev": "tsc -w"
   },
   "repository": {
@@ -35,6 +35,10 @@
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
     "eslint": "^8.46.0",
+    "gulp": "^4.0.2",
+    "gulp-log": "^0.0.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
     "prettier": "^3.0.1",
     "typescript": "^5.1.6"
   }
