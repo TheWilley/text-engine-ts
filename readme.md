@@ -31,6 +31,17 @@ For development, you can run `npm run dev` to watch for changes and compile them
 ### How do I use it?
 This project is meant only as a migration, meaning the original documentation still should be valid. In order to avoid uneeded redundency, I'll link to the original documentation instead, which can be found [here](https://github.com/okaybenji/text-engine#disks).
 
+### Documentation
+All propeties and functions will have a description, along with different types of *classifications*. These are:
+
+| Classification      | Description |
+| ----------- | ----------- |
+| *Required*      | This property **must** exist.       |
+| *Optional*   | This property **may** exist.        |
+| *Recommended* | It is **recommended** that this property exist. |
+
+This is to make it easier for users to know which propeties to use or not use within the `GameDiskObject` or `GameDiskFactory`.
+
 ### Adding custom properties
 You may encounter an error in the style of `Property 'x' does not exist on type 'unknown'` when trying to use custom properties, and *this is by design*. Any properties which are not already known by text-engine will be defined as unknown in order to force the user (you) to properly handle and type-check them. This design decision is to promote safe and explicit coding practices.
 
@@ -103,4 +114,4 @@ No errors are thrown anymore, since we have declared the explicit type of `todo`
 ### Some notes
 * You should either apply the `GameDiskFactory` (v3) or `GameDiskObject` (v2) type to your disk object. For example: `const demoDisk: GameDiskFactory = () => ({})` or `const demoDisk: GameDiskObject = {}`. See `game-disks` folder for examples.
 * Linting is disabled for all files in the `game-disks` folder.
-* Altough I initially wanted to compile everything using the `strict` flag in `tsconfig.json`, it turns out there's probably no need since the code is pretty bug free anyway.
+* Try to avoid the `any` type as it effectively yields this migration useless.  

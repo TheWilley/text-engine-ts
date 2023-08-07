@@ -49,34 +49,50 @@ type CallbackObjects = {
  */
 type Item = {
     /**
+     * *Recommended.*
+     * 
      * How the item is referred to by the game and the player. Using an array allows you to define multiple string names for the item. You might do this if you expect the player may call it by more than one name. For instance ['basketball', 'ball']. When listing items in a room, the engine will always use the first name in the list.
      */
     name?: string | string[];
     /**
+     * *Optional.*
+     * 
      * Description displayed when the player looks at the item. If multiple descriptions are provided, one will be chosen at random.
      */
     desc?: string | string[];
     /**
+     * *Optional.*
+     * 
      * Whether the player can pick up this item (if it's in a room). Defaults to false.
      */
     isTakeable?: boolean;
     /**
+     * *Optional.*
+     * 
      * Function to be called when the player uses the item.
      */
     onUse?: (args?: CallbackObjects) => void;
     /**
+     * *Optional.*
+     * 
      * Function to be called when the player looks at the item.
      */
     onLook?: (args?: CallbackObjects) => void;
     /**
+     * *Optional.*
+     * 
      * Function to be called when the player takes the item.
      */
     onTake?: (args?: CallbackObjects) => void;
     /**
+     * *Optional.*
+     * 
      * Weather the item is hidden from the player.
      */
     isHidden?: boolean;
     /**
+     * *Optional.*
+     * 
      * Reason player cannot pick up an item.
      */
     block?: string
@@ -95,34 +111,50 @@ type Item = {
  */
 type Character = {
     /**
+     * *Recommended.*
+     * 
      * How the character is referred to by the game and the player. Using an array allows you to define multiple string names for the character. You might do this if you expect the player may call them by more than one name. For instance ['Steve', 'waiter', 'garçon']. When listing characters in a room, the engine will always use the first name in the list.
      */
     name?: string | string[];
     /**
+     * *Recommended.*
+     * 
      * The ID of the room the character is currently in. The player can only talk to characters in the room with them.
      */
     roomId?: string;
     /**
+     * *Optional.*
+     * 
      * Description. Text displayed when the player looks at the character. If multiple descriptions are provided, one will be chosen at random.
      */
     desc?: string | string[];
     /**
+     * *Optional.*
+     * 
      * If a string is provided, it will be printed when the player talks to this character. Otherwise, this should be a list of topics for use in the conversation with the character.
      */
     topics?: string | Topic[] | ((args?: CallbackObjects) => string | Topic[]);
     /**
+     * *Optional.*
+     * 
      * Function to be called when the player talks to the character.
      */
     onTalk?: (args?: CallbackObjects) => void;
     /**
+     * *Optional.*
+     * 
      * Function to be called when the player looks at the character.
      */
     onLook?: (args?: CallbackObjects) => void;
     /**
+     * *Optional.*
+     * 
      * Player's conversation history with this character.
      */
     chatLog?: string[];
     /**
+     * *Optional.*
+     * 
      * Whether the character is hidden from the player.
      */
     isHidden?: boolean;
@@ -137,26 +169,40 @@ type Character = {
  */
 type Topic = {
     /**
+     * *Required.*
+     * 
      * The choice presented to the player, with a KEYWORD the player can type to select it. If the keyword is written in uppercase, the engine can identify it automatically. (Otherwise, you'll need to specify the keyword in a separate property.) The option can be just the keyword itself, or any string containing the keyword.
      */
-    option?: string;
+    option: string;
     /**
+     * *Required / Optional.*
+     * 
      * The text to display when the user types the keyword to select the option.
+     * @remarks Either `option`, `onSelected` or both are required.
      */
     line?: string;
     /**
+     * *Required / Optional.*
+     * 
      * Function to be called when the player types the keyword to select the option.
+     * @remarks Either `option`, `onSelected` or both are required.
      */
     onSelected?: (args?: CallbackObjects) => void;
     /**
+     * *Optional.*
+     * 
      * Whether this option should no longer be available to the player after it has been selected once.
      */
     removeOnRead?: boolean;
     /**
+     * *Optional.*
+     * 
      * Array of keyword strings representing the prerequisite topics a player must have selected before this one will appear. (When topics are selected, their keywords go into an array on the character called "chatLog".)
      */
     prereqs?: string[];
     /**
+     * *Optional.*
+     * 
      * The word the player must type to select this option. This property is only required if the option itself does not contain a keyword written in uppercase.
      */
     keyword?: string;
@@ -171,18 +217,26 @@ type Topic = {
  */
 type Exit = {
     /**
+     * *Recommended.*
+     * 
      * The direction the player must go to leave via this exit (e.g. "north", but can be anything)
      */
     dir?: string | string[];
     /**
+     * *Recommended.*
+     * 
      * The ID of the room this exit leads to.
      */
     id?: string;
     /**
+     * *Optional.*
+     * 
      * Line to be printed if the player tries to use this exit. If this property exists, the player cannot use the exit.
      */
     block?: string;
     /**
+     * *Optional.*
+     * 
      * Weather the exit is hidden from the player.
      */
     isHidden?: boolean;
@@ -197,34 +251,50 @@ type Exit = {
  */
 type Room = {
     /**
+     * *Recommended.*
+     * 
      * Unique identifier for this room. Can be anything.
      */
     id?: string;
     /**
+     * *Recommended*. 
+     * 
      * The name of the room will be displayed each time it is entered.
      */
     name?: string;
     /**
+     * *Recommended.*
+     * 
      * Description of the room, displayed when it is first entered, and also when the player issues the look command.
      */
     desc?: string;
     /**
+     * *Recommended.*
+     * 
      * List of paths from this room.
      */
     exits?: Exit[];
     /**
+     * *Optional.*
+     * 
      * Graphic to be displayed each time the room is entered. (This is intended to be ASCII art.)
      */
     img?: string;
     /**
+     * *Optional.*
+     * 
      * List of items in this room. Items can be interacted with by the player.
      */
     items?: Item[];
     /**
+     * *Optional.*
+     * 
      * Function to be called when the player enters this room.
      */
     onEnter?: (args?: CallbackObjects) => void;
     /**
+     * *Optional.*
+     * 
      * Function to be called when the player issues the look command in this room.
      */
     onLook?: (args?: CallbackObjects) => void;
@@ -243,18 +313,26 @@ type Room = {
  */
 interface GameDiskObject {
     /**
+     * *Required.*
+     * 
      * This is a reference to the room the player currently occupies. Set this to the ID of the room the player should start in.
      */
     roomId: string;
     /**
+     * *Required.*
+     * 
      * List of rooms in the game.
      */
     rooms: Room[];
     /**
+     * *Optional.*
+     * 
      * List of items in the player's inventory.
      */
     inventory?: Item[];
     /**
+     * *Optional.*
+     * 
      * List of characters in the game.
      */
     characters?: Character[];
