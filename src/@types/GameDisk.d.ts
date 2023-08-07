@@ -73,11 +73,11 @@ type Item = {
      */
     onTake?: (args?: CallbackObjects) => void;
     /**
-     * *Developer-only property*.
+     * Weather the item is hidden from the player.
      */
     isHidden?: boolean;
     /**
-     * *Developer-only property*.
+     * Reason player cannot pick up an item.
      */
     block?: string
     /**
@@ -85,7 +85,7 @@ type Item = {
      */
     use?: (args?: CallbackObjects) => void;
     /**
-     * *Custom properties*.
+     * *Custom property*.
      */
     [key: string]: unknown;
 }
@@ -123,11 +123,11 @@ type Character = {
      */
     chatLog?: string[];
     /**
-     * *Developer-only property*.
+     * Whether the character is hidden from the player.
      */
     isHidden?: boolean;
     /**
-     * *Custom properties*.
+     * *Custom property*.
      */
     [key: string]: unknown;
 }
@@ -161,7 +161,7 @@ type Topic = {
      */
     keyword?: string;
     /**
-     * *Custom properties*.
+     * *Custom property*.
      */
     [key: string]: unknown;
 }
@@ -183,11 +183,11 @@ type Exit = {
      */
     block?: string;
     /**
-     * *Developer-only property*.
+     * Weather the exit is hidden from the player.
      */
     isHidden?: boolean;
     /**
-     * *Custom properties*.
+     * *Custom property*.
      */
     [key: string]: unknown;
 }
@@ -233,7 +233,7 @@ type Room = {
      */
     visits?: number;
     /**
-     * *Custom properties*.
+     * *Custom property*.
      */
     [key: string]: unknown;
 }
@@ -267,7 +267,7 @@ interface GameDiskObject {
      */
     conversation?: Topic[];
     /**
-     * *Custom properties*.
+     * *Custom property*.
      */
     [key: string]: unknown;
 }
