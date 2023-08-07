@@ -9,12 +9,38 @@ it would be fine here since this is more of an app
  * Defines types for avaible objects in callbacks.
  */
 type CallbackObjects = {
+    /**
+     * A disk is a function which returns a JavaScript object that describes your game. At minimum, that object must have these two top-level properties:
+    */
     disk?: GameDiskObject,
+    /**
+     * Print a line of text to the console. It takes up to two arguments:
+     * @param line The text to be printed.
+     * @param className *Optional*. The name of a CSS class to apply to the line. You can use this to style the text.
+     */
     println?: Println
+    /**
+     * A room is a JavaScript object. You usually want a room to have the following properties:
+     */
     room?: Room,
+    /**
+     * Get a reference to a room by its ID. It takes one argument:
+     * @param id The unique identifier for the room.
+     * @returns A reference to the room, or undefined if no room with that ID exists.
+     */
     getRoom?: GetRoom
+    /**
+     * Move the player to particular room. It takes one argument:
+     * @param id The unique identifier for the room.
+     */
     enterRoom?: EnterRoom
+    /**
+     * An item is an object with a name
+     */
     item?: Item
+    /**
+     * A character is an object with a name
+     */
     character?: Character
 }
 

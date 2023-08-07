@@ -22,11 +22,11 @@ type GetRoom = (id: string) => Room | undefined;
  */
 type EnterRoom = (id: string) => void;
 /**
- * 
- * @param dir  The name of the exit's dir (direction) property, e.g. "north".
- * @param exits The list of exits to search. (Usually you would get a reference to a room and pass `room.exits`.)
+ * Get a reference to an exit by its direction name from a list of exits. It takes two argument:
+ * @param dir The name of the exit's dir (direction) property, e.g. "north".
+ * @param exits The list of exits to search. (Usually you would get a reference to a room and pass room.exits.)
  * @returns A reference to the exit, or undefined if no exit with that dir exists.
- */
+*/
 type GetExit = (dir: string, exits: Exit[]) => Exit | undefined;
 /**
  * Get a reference to a character. It takes up to two arguments:

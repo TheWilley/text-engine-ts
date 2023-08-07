@@ -309,6 +309,12 @@ let go = () => {
 
 // find the exit with the passed direction in the given list
 // string, array -> exit
+/**
+ * Get a reference to an exit by its direction name from a list of exits. It takes two argument:
+ * @param dir The name of the exit's dir (direction) property, e.g. "north".
+ * @param exits The list of exits to search. (Usually you would get a reference to a room and pass room.exits.)
+ * @returns A reference to the exit, or undefined if no exit with that dir exists.
+*/
 // eslint-disable-next-line prefer-const
 let getExit: GetExit = (dir, exits) => exits.find(exit =>
   Array.isArray(exit.dir)
@@ -841,6 +847,11 @@ const setInput = (str) => {
 
 // render output, with optional class
 // (string | array | fn -> string) -> nothing
+/**
+ * Print a line of text to the console. It takes up to two arguments:
+ * @param line The text to be printed.
+ * @param className *Optional*. The name of a CSS class to apply to the line. You can use this to style the text.
+ */
 const println: Println = (line?, className?) => {
   // bail if string is null or undefined
   if (!line) {
@@ -973,6 +984,11 @@ const navigateHistory = (dir) => {
 
 // get random array element
 // array -> any
+/**
+ * Get a random item from an array. It takes one argument:
+ * @param arr The array with the items to pick from.
+ * @returns A random item from the array.
+ */
 const pickOne: PickOne = arr => arr[Math.floor(Math.random() * arr.length)];
 
 // return the first name if it's an array, or the only name
@@ -981,6 +997,11 @@ const getName = name => typeof name === 'object' ? name[0] : name;
 
 // retrieve room by its ID
 // string -> room
+/**
+ * Get a reference to a room by its ID. It takes one argument:
+ * @param id The unique identifier for the room.
+ * @returns A reference to the room, or undefined if no room with that ID exists.
+ */
 const getRoom: GetRoom = (id) => disk.rooms.find(room => room.id === id);
 
 // remove punctuation marks from a string
@@ -993,6 +1014,10 @@ const removeExtraSpaces = str => str.replace(/\s{2,}/g, ' ');
 
 // move the player into room with passed ID
 // string -> nothing
+/**
+ * Move the player to particular room. It takes one argument:
+ * @param id The unique identifier for the room.
+ */
 const enterRoom: EnterRoom = (id) => {
   const room = getRoom(id);
 
@@ -1036,14 +1061,31 @@ const objectHasName = (obj, name) => {
 
 // get a list of all characters in the passed room
 // string -> characters
+/**
+ * Get an array containing references to each character in a particular room. It takes one argument:
+ * @param roomId The unique identifier for the room.
+ * @returns An array of references to the characters in the room.
+ */
 const getCharactersInRoom: GetCharactersInRoom = (roomId) => disk.characters.filter(c => c.roomId === roomId);
 
 // get a character by name from a list of characters
 // string, characters -> character
+/**
+ * Get a reference to a character. It takes up to two arguments:
+ * @param name The character's name.
+ * @param chars *Optional*. The array of characters to search. Defaults to searching all characters on the disk.
+ * @returns A reference to the character, or undefined if no character with that name exists.
+ */
 const getCharacter: GetCharacter = (name, chars = disk.characters) => chars.find(char => objectHasName(char, name));
 
 // get item by name from room with ID
 // string, string -> item
+/**
+ * Get a reference to an item in a particular room. It takes two arguments:
+ * @param itemName The name of the item.
+ * @param roomId The unique identifier for the room.
+ * @returns A reference to the item, or undefined if no item with that name exists in the room.
+ */
 const getItemInRoom: GetItemInRoom = (itemName, roomId) => {
   const room = getRoom(roomId);
 
@@ -1052,10 +1094,20 @@ const getItemInRoom: GetItemInRoom = (itemName, roomId) => {
 
 // get item by name from inventory
 // string -> item
+/**
+ * Get a reference to an item in the player's inventory. It takes one argument:
+ * @param name The name of the item.
+ * @returns A reference to the item, or undefined if no item with that name exists in the inventory.
+ */
 const getItemInInventory: GetItemInInventory = (name) => disk.inventory.find(item => objectHasName(item, name));
 
 // get item by name
 // string -> item
+/**
+ * Get a reference to an item, first looking in inventory, then in the current room. It takes one argument:
+ * @param name The name of the item.
+ * @returns A reference to the item, or undefined if no item with that name exists.
+ */
 // eslint-disable-next-line
 const getItem: GetItem = (name) => getItemInInventory(name) || getItemInRoom(name, disk.roomId);
 
