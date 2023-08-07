@@ -1,8 +1,8 @@
 /* eslint-disable no-useless-escape */
 
 // global properties, assigned with let for easy overriding by the user
-let diskFactory;
-let disk;
+let diskFactory: GameDiskFactory;
+let disk: GameDiskObject;
 
 // store user input history
 let inputs = [];
@@ -362,8 +362,6 @@ let goDir = (dir) => {
   enterRoom(nextRoom.id);
 };
 
-// TODO: Check which ones should be lets or consts
-
 // shortcuts for cardinal directions
 // (allows player to type just e.g. 'n')
 /* eslint-disable prefer-const */
@@ -481,7 +479,8 @@ let talkToOrAboutX = (preposition, x) => {
       println('You need to be in a conversation to talk about something.');
       return;
     }
-    const character = eval(disk.conversant);
+    // I'm unsure if I got the correct type on conversant so I pass it as a string for now
+    const character = eval(disk.conversant as unknown as string);
     if (getCharactersInRoom(room.id).includes(disk.conversant)) {
       const response = x.toLowerCase();
       if (response === 'nothing') {
@@ -492,7 +491,7 @@ let talkToOrAboutX = (preposition, x) => {
       } else {
         const topic = disk.conversation.length && conversationIncludesTopic(disk.conversation, response);
         const isAvailable = topic && topicIsAvailable(character, topic);
-        if (isAvailable) {
+        if (isAvailable && typeof topic === 'object') {
           if (topic.line) {
             println(topic.line);
           }

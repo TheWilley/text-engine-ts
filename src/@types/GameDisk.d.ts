@@ -15,6 +15,7 @@ type CallbackObjects = {
     getRoom?: GetRoom
     enterRoom?: EnterRoom
     item?: Item
+    character?: Character
 }
 
 /**
@@ -82,11 +83,11 @@ type Character = {
     /**
      * If a string is provided, it will be printed when the player talks to this character. Otherwise, this should be a list of topics for use in the conversation with the character.
      */
-    topics?: string | Topic[];
+    topics?: string | Topic[] | ((args?: CallbackObjects) => string | Topic[]);
     /**
      * Function to be called when the player talks to the character.
      */
-    onTalk?: () => void;
+    onTalk?: (args?: CallbackObjects) => void;
     /**
      * Function to be called when the player looks at the character.
      */
@@ -120,7 +121,7 @@ type Topic = {
     /**
      * Function to be called when the player types the keyword to select the option.
      */
-    onSelected?: () => void;
+    onSelected?: (args?: CallbackObjects) => void;
     /**
      * Whether this option should no longer be available to the player after it has been selected once.
      */
@@ -231,6 +232,14 @@ interface GameDiskObject {
      * List of characters in the game.
      */
     characters?: Character[];
+    /**
+     * *Developer-only property*.
+     */
+    conversant?: Character;
+    /**
+     * *Developer-only property*.
+     */
+    conversation?: Topic[];
     /**
      * *Custom properties*.
      */

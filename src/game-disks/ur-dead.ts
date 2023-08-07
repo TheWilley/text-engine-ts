@@ -1,5 +1,14 @@
 // NOTE: This game is a work in progress!
 
+interface GameDiskObject {
+    todo?: { id: number, desc: string, done?: boolean }[];
+    methods?: {
+        resetCourt: () => void;
+        crossOff: (id: number) => void;
+        checkCard: () => void;
+    };
+}
+
 const urDead: GameDiskFactory = () => ({
     roomId: 'title',
     todo: [{ id: 0, desc: `Figure out where you are.` }],
@@ -24,7 +33,7 @@ const urDead: GameDiskFactory = () => ({
                     // cross off completed items
                     .map(item => item.done ? `~~• ${item.desc}~~` : `• ${item.desc}`);
 
-                list.forEach(println);
+                list.forEach(() => println);
             },
             onUse({ item, disk }) {
                 // Using the list is the same as looking at it.
@@ -72,7 +81,7 @@ const urDead: GameDiskFactory = () => ({
             items: [
                 {
                     name: 'hoop',
-                    desc: `It's a hoot. [Not a typo. --ED]`,
+                    desc: [`It's a hoot. [Not a typo. --ED]`],
                 },
                 {
                     name: 'horse',
@@ -633,7 +642,10 @@ const urDead: GameDiskFactory = () => ({
                         skeleton.onTalk = () => { };
 
                         // replace "Looks like he wants to say something"
-                        skeleton.desc = `${disk.playerName ? disk.playerName + ', ' : ''} I wonder how he attaches that beard...`;
+                        // Special case where we ignore type to avoid runtime errors
+                        // It's easier to just ignore it than modyfing the existing type, but do this sparingly
+                        // @ts-ignore
+                        skeleton.desc = () => `${disk.playerName ? disk.playerName + ', ' : ''} I wonder how he attaches that beard...`;
 
                         // remove the last sentence of the description now that you've talked
                         const room = getRoom(disk.roomId);
@@ -650,7 +662,8 @@ const urDead: GameDiskFactory = () => ({
                     option: `What is your NAME?`,
                     prereqs: ['fran'],
                     removeOnRead: true,
-                    line: `Oh, I'm Dave. Pleasure to make your acquaintance${disk.playerName ? ', ' + disk.playerName : ''}.`,
+                    // @ts-ignore
+                    line: () => `Oh, I'm Dave. Pleasure to make your acquaintance${disk.playerName ? ', ' + disk.playerName : ''}.`,
                     onSelected() {
                         // now that we know his name, let's call him by it
                         const dave = getCharacter('dave');
