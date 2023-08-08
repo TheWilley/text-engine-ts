@@ -20,10 +20,10 @@
 
 A fork of the HTML-based text adventure game engine "[text-engine](https://github.com/okaybenji/text-engine)", originally created by okaybenji, with the aim to migrate the project to [TypeScript](https://www.typescriptlang.org/).
 
-### Motivation and Goal
+## Motivation and Goal
 Simply put, I prefer TypeScript over JavaScript. The primary vision is to migrate text-engine so that users have type-checks and easy access to documentation trough [TSDoc](https://tsdoc.org/), i.e, within their IDE. 
 
-### Installation and Building
+## Installation and Building
 Because the project now uses TypeScript, you will have to compile your files into JavaScript before you can run them. You can do this by installing dependencies with `npm install`, then run `npm run build` to compile the files. A `dist` folder will be created with all the compiled files ready to go.
 
 For development, you can run `npm run dev` to watch for changes and compile them automatically. This is useful when making your game disks so you don't have to manually compile every time you make a change.
