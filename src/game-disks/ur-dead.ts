@@ -510,7 +510,7 @@ const urDead: GameDiskFactory = () => ({
                 },
                 {
                     option: `That movie really does sound great. Any chance I could BORROW it?`,
-                    line: `"Woah, you haven't seen *Romancing the Stone*?" he asks, wide-eyed. "Oh, man, yeah, you need to watch it. We're sort of in the middle of something, but you can grab it from our pad over there," he says, nodding his head to the SOUTHWEST as Dirk tosses you a key.
+                    line: `"Woah, you haven't seen *Romancing the Stone*?" he asks, wide-eyed. "Oh, man , yeah, you need to watch it. We're sort of in the middle of something, but you can grab it from our pad over there," he says, nodding his head to the SOUTHWEST as Dirk tosses you a key.
             "You can leave it unlocked. Just slide the key under the fake rock."`,
                     prereqs: ['great'],
                     onSelected() {

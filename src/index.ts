@@ -1,8 +1,60 @@
 /* eslint-disable no-useless-escape */
-
 // global properties, assigned with let for easy overriding by the user
 let diskFactory: GameDiskFactory;
 let disk: GameDiskObject;
+
+// Node class
+class TreeNode {
+  public data: Room;
+  public children: TreeNode[];
+
+  constructor(data: Room) {
+    this.data = data;
+    this.children = [];
+  }
+
+  public add(data: Room) {
+    this.children.push(new TreeNode(data));
+  }
+
+  public remove(data: Room) {
+    this.children = this.children.filter((node) => {
+      return node.data !== data;
+    });
+  }
+}
+
+// Tree class
+class Tree {
+  public root: TreeNode | null;
+  constructor() {
+    this.root = null;
+  }
+
+  traverseBF(fn: (node: TreeNode) => void) {
+    const arr = [this.root];
+    while (arr.length) {
+      const node = arr.shift();
+
+      if (node) {
+        arr.push(...node.children);
+        fn(node);
+      }
+    }
+  }
+
+  traverseDF(fn: (node: TreeNode) => void) {
+    const arr = [this.root];
+    while (arr.length) {
+      const node = arr.shift();
+
+      if (node) {
+        arr.unshift(...node.children);
+        fn(node);
+      }
+    }
+  }
+}
 
 // store user input history
 let inputs = [];
@@ -598,6 +650,59 @@ let use = () => {
   });
 };
 
+const map = () => {
+  const tree = new Tree();
+  const rooms = disk.rooms;
+  const processedRooms = [];
+  const roomsToProcess = [rooms[1]];
+
+  while (roomsToProcess.length) {
+    // Get the next room to process
+    const room = roomsToProcess[0];
+
+    // If the room has already been processed, skip it and remove it from the queue
+    if (processedRooms.includes(room.id)) {
+      roomsToProcess.shift();
+      continue;
+    }
+
+    const    = new TreeNode(room);
+
+    // Add the room to list of processed rooms
+    processedRooms.push(room.id);
+
+    // If the room has exits
+    if (room.exits) {
+      // Go trough each exit and add the room to the queue if it hasn't been processed yet
+      for (const exit of room.exits) {
+        if (!processedRooms.includes(exit.id)) {
+          treeNode.add(getRoom(exit.id));
+          roomsToProcess.push(getRoom(exit.id));
+        }
+      }
+
+      if (tree.root === null) {
+        tree.root = treeNode;
+      } else {
+        let match = false;
+        // Check if current room exists in the tree
+        tree.traverseBF((node) => {
+          if (node.data.id === room.id) {
+            node.add(room);
+            match = true;
+          }
+        });
+
+        if (!match) {
+          tree.root.add(room);
+        }
+      }
+    }
+  }
+
+  console.log(tree);
+};
+
 // use the item with the given name
 // string -> nothing
 // eslint-disable-next-line prefer-const
@@ -732,6 +837,7 @@ let commands = [
     restore: load,
     export: exportSave,
     import: importSave,
+    map: map,
   },
   // one argument (e.g. "go north", "take book")
   {

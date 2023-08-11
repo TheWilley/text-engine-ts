@@ -1,4 +1,4 @@
-@font-face{
+@font-face {
   font-family: 'Work Sans', sans-serif;
   src: url('fonts/font.ttf');
 }
@@ -85,14 +85,29 @@ br {
 }
 
 /* color the user's input & links */
-.user, a {
+.user,
+a {
   color: lightskyblue;
 }
 
 @keyframes blink {
-  0% {background: #AAA;}
-  49% {background: #AAA;}
-  60% {background: transparent;}
-  99% {background: transparent;}
-  100% {background: #AAA;}
+  0% {
+    background: #AAA;
+  }
+
+  49% {
+    background: #AAA;
+  }
+
+  60% {
+    background: transparent;
+  }
+
+  99% {
+    background: transparent;
+  }
+
+  100% {
+    background: #AAA;
+  }
 }
