@@ -1,6 +1,5 @@
 const gulp = require('gulp');
 const ts = require('gulp-typescript');
-const log = require('gulp-log');
 const chalk = require('chalk');
 const replace = require('gulp-replace');
 
