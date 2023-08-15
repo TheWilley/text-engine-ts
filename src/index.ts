@@ -651,56 +651,115 @@ let use = () => {
 };
 
 const map = () => {
-  const tree = new Tree();
-  const rooms = disk.rooms;
-  const processedRooms = [];
-  const roomsToProcess = [rooms[1]];
-
-  while (roomsToProcess.length) {
-    // Get the next room to process
-    const room = roomsToProcess[0];
-
-    // If the room has already been processed, skip it and remove it from the queue
-    if (processedRooms.includes(room.id)) {
-      roomsToProcess.shift();
-      continue;
+  const convertPos = (dir: string, pos: { y: number, x: number }) => {
+    // Check if the position is undefined
+    // Not a very good solution as we can get duplicate positions
+    if (!pos) {
+      // Generate a random position to be either 1 or -1
+      pos = { y: Math.random() > 0.5 ? 1 : -1, x: Math.random() > 0.5 ? 1 : -1 };
     }
 
-    const    = new TreeNode(room);
+    // Check if the direction is an array and find the first available direction
+    const availableDirs = ['north', 'south', 'east', 'west', 'northeast', 'northwest', 'southeast', 'southwest'];
+    if (Array.isArray(dir)) {
+      // Find the first available direction
+      dir = dir.find(d => availableDirs.includes(d));
+    }
 
-    // Add the room to list of processed rooms
-    processedRooms.push(room.id);
+    // Convert the direction to a position
+    switch (dir) {
+      case 'north':
+        pos.y--;
+        break;
+      case 'south':
+        pos.y++;
+        break;
+      case 'east':
+        pos.x++;
+        break;
+      case 'west':
+        pos.x--;
+        break;
+      case 'northeast':
+        pos.y--;
+        pos.x++;
+        break;
+      case 'northwest':
+        pos.y--;
+        pos.x--;
+        break;
+      case 'southeast':
+        pos.y++;
+        pos.x++;
+        break;
+      case 'southwest':
+        pos.y++;
+        pos.x--;
+        break;
+    }
+    return pos;
+  };
 
-    // If the room has exits
-    if (room.exits) {
-      // Go trough each exit and add the room to the queue if it hasn't been processed yet
-      for (const exit of room.exits) {
-        if (!processedRooms.includes(exit.id)) {
-          treeNode.add(getRoom(exit.id));
-          roomsToProcess.push(getRoom(exit.id));
-        }
+  // Create a adjacency list
+  const getAdjacentList = () => {
+    const adjacencyList = {};
+
+    for (let i = 0; i < disk.rooms.length; i++) {
+      const room = disk.rooms[i];
+      if (!adjacencyList[room.id]) {
+        adjacencyList[room.id] = [];
       }
 
-      if (tree.root === null) {
-        tree.root = treeNode;
-      } else {
-        let match = false;
-        // Check if current room exists in the tree
-        tree.traverseBF((node) => {
-          if (node.data.id === room.id) {
-            node.add(room);
-            match = true;
+      if (room.exits) {
+        for (let j = 0; j < room.exits.length; j++) {
+          const exit = room.exits[j];
+          const nextRoom = getRoom(exit.id);
+          if (nextRoom && !adjacencyList[room.id].includes(nextRoom.id)) {
+            if (!adjacencyList[nextRoom.id]) {
+              adjacencyList[nextRoom.id] = [];
+            }
+            adjacencyList[nextRoom.id].push({ room: room, dir: exit.dir, pos: { y: 0, x: 0 } });
           }
-        });
-
-        if (!match) {
-          tree.root.add(room);
         }
       }
     }
-  }
 
-  console.log(tree);
+    return adjacencyList;
+  };
+
+  const get2dmap = () => {
+    const adjacencyList = getAdjacentList();
+    const map = {};
+
+    // Deep First Search (DFS) algorithm
+    function dfs(node: { room: Room, dir: string, pos: { y: number, x: number } }, visited: Set<string>): void {
+      if (!visited.has(node.room.id)) {
+
+        visited.add(node.room.id);
+        for (const neighbor of adjacencyList[node.room.id] || []) {
+          const relativePos = { y: node.pos.y, x: node.pos.x };
+          // Set relative position of neighbor
+          neighbor.pos = convertPos(neighbor.dir, relativePos);
+          map[neighbor.room.id] = neighbor.pos;
+
+          dfs(neighbor, visited);
+        }
+      }
+    }
+
+    // Find first room with exits
+    const startingNode = disk.rooms.find(room => room.exits && room.exits.length > 0);
+
+    // Create a Set to store the visited nodes
+    const visitedNodes = new Set<string>();
+
+    // Start the DFS
+    dfs({ room: startingNode, dir: null, pos: { y: 0, x: 0 } }, visitedNodes);
+
+    return map;
+  };
+
+  console.log('Map:' + JSON.stringify(get2dmap(), null, 2));
 };
 
 // use the item with the given name
