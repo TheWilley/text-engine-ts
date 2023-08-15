@@ -651,14 +651,8 @@ let use = () => {
 };
 
 const map = () => {
-  const convertPos = (dir: string, pos: { y: number, x: number }) => {
-    // Check if the position is undefined
-    // Not a very good solution as we can get duplicate positions
-    if (!pos) {
-      // Generate a random position to be either 1 or -1
-      pos = { y: Math.random() > 0.5 ? 1 : -1, x: Math.random() > 0.5 ? 1 : -1 };
-    }
-
+  // Convert a direction to a position
+  const convertPosition = (dir: string, pos: { y: number, x: number }) => {
     // Check if the direction is an array and find the first available direction
     const availableDirs = ['north', 'south', 'east', 'west', 'northeast', 'northwest', 'southeast', 'southwest'];
     if (Array.isArray(dir)) {
@@ -701,23 +695,37 @@ const map = () => {
   };
 
   // Create a adjacency list
+  // The adjacency list is a dictionary of rooms with a list of adjacent rooms (exits)
   const getAdjacentList = () => {
     const adjacencyList = {};
 
+    // Go through each room
     for (let i = 0; i < disk.rooms.length; i++) {
+      // Get room 
       const room = disk.rooms[i];
+
+      // Add room to adjacency list if it doesn't exist
       if (!adjacencyList[room.id]) {
         adjacencyList[room.id] = [];
       }
 
+      // If the room has exits, add them to the adjacency list
       if (room.exits) {
+        // Go through each exit
         for (let j = 0; j < room.exits.length; j++) {
+
+          // Get the next room
           const exit = room.exits[j];
           const nextRoom = getRoom(exit.id);
+
+          // Check if the next room is not in the adjacency list
           if (nextRoom && !adjacencyList[room.id].includes(nextRoom.id)) {
+            // Add the next room to the adjacency list if it doesn't exist
             if (!adjacencyList[nextRoom.id]) {
               adjacencyList[nextRoom.id] = [];
             }
+
+            // Add next room to the adjacency list
             adjacencyList[nextRoom.id].push({ room: room, dir: exit.dir, pos: { y: 0, x: 0 } });
           }
         }
@@ -727,25 +735,26 @@ const map = () => {
     return adjacencyList;
   };
 
+  // Get the 2d map
+  // The 2d map is a dictionary of rooms with a position
   const get2dmap = () => {
     const adjacencyList = getAdjacentList();
     const map = {};
 
     // Deep First Search (DFS) algorithm
-    function dfs(node: { room: Room, dir: string, pos: { y: number, x: number } }, visited: Set<string>): void {
+    const dfs = (node: { room: Room, dir: string, pos: { y: number, x: number } }, visited: Set<string>) => {
       if (!visited.has(node.room.id)) {
 
         visited.add(node.room.id);
         for (const neighbor of adjacencyList[node.room.id] || []) {
           const relativePos = { y: node.pos.y, x: node.pos.x };
-          // Set relative position of neighbor
-          neighbor.pos = convertPos(neighbor.dir, relativePos);
+          neighbor.pos = convertPosition(neighbor.dir, relativePos);
           map[neighbor.room.id] = neighbor.pos;
 
           dfs(neighbor, visited);
         }
       }
-    }
+    };
 
     // Find first room with exits
     const startingNode = disk.rooms.find(room => room.exits && room.exits.length > 0);
